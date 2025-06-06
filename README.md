@@ -1,36 +1,204 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## 🔌 API Endpoints
 
-## Getting Started
+### 📡 `/api/generate-chats` (POST)
+Generates synthetic chat conversations
+- Uses example chat URLs as training data
+- Creates both privacy and commercial law scenarios
+- Returns generated chat data
 
-First, run the development server:
+### 📋 `/api/generate-report` (POST) 
+Generates comprehensive analytics report
+- Analyzes existing chat data
+- Calculates statistics and patterns
+- Returns structured report data# 🤖 AI-Driven Synthetic Chat
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+A Next.js application that generates synthetic legal chat conversations using AI and provides comprehensive analytics through an interactive dashboard. The app creates realistic interactions between in-house lawyers and legal AI, focusing on privacy law and commercial contracts. ⚖️✨
+
+## ✨ Features
+
+- Create realistic legal chat conversations using Anthropic's Claude API
+- View comprehensive analytics and insights from generated chats
+- Generate and send detailed HTML reports via email
+- Analyze question patterns, legal topics, and conversation statistics
+- Support for both privacy law and commercial contracts scenarios
+
+## 🛠️ Tech Stack
+
+- Next.js 15, React 19, Material-UI, Recharts
+- Next.js API routes, Node.js
+- Anthropic Claude API
+- TanStack Query, Zod validation
+- Material-UI with custom theming
+- TypeScript, ESLint, Prettier
+
+## 📋 Prerequisites
+
+- Node.js 18+
+- pnpm package manager
+- Anthropic API key
+
+## 🚀 Installation
+
+1. Clone the repository
+   ```bash
+   git clone <repository-url>
+   cd ai-driven-synthetic-chat
+   ```
+
+2. Install dependencies
+   ```bash
+   pnpm install
+   ```
+
+3. Environment Setup - Create a `.env.local` file in the root directory:
+   ```env
+   ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   ```
+
+4. Start the development server
+   ```bash
+   pnpm dev
+   ```
+
+   The application will be available at `http://localhost:3000`
+
+## 💻 Usage
+
+### 🤖 Generating Synthetic Chats
+
+1. Click "Generate Chats" button in the main dashboard
+2. Run the chat generation script directly via command line:
+   ```bash
+   pnpm generate-chat:start
+   ```
+
+### 📈 Generating Reports
+
+1. Click "Generate Email" in the dashboard to create comprehensive analytics
+2. View real-time statistics including:
+   - Total conversations and legal questions
+   - Time and cost savings metrics
+   - Question pattern analysis
+   - Legal topic categorization
+
+### 📮 Email Reports
+
+1. Generate an email report from the dashboard
+2. Add recipient email addresses
+3. Send formatted HTML reports with complete analytics
+
+## 📁 Project Structure
+
+```
+src/
+├── api/
+│   ├── analysis/          # Report generation and data analysis
+│   ├── chatGenerator/     # Synthetic chat creation logic
+│   └── types/            # TypeScript type definitions
+├── components/           # React components
+├── data/
+│   └── hooks/           # TanStack Query hooks
+├── pages/               # Next.js pages directory
+│   ├── api/             # API route handlers
+│   ├── _app.tsx         # App configuration
+│   ├── _document.tsx    # Document structure
+│   └── index.tsx        # Home page
+├── resources/           # Static resources and example data
+└── styles/             # Theme and styling configuration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔧 Key Components
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🤖 Chat Generation
+- Manages the entire chat generation pipeline
+- Retrieves source data from example URLs
+- Creates synthetic conversations using AI prompts
+- Processes and validates generated content
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 📊 Analytics & Reporting
+- Analyzes chat data and creates comprehensive reports
+- Identifies common question patterns and legal topics
+- Computes conversation metrics and insights
 
-## Learn More
+### 🖥️ Dashboard Features
+- Key metrics display (conversations, questions, savings)
+- Live preview of generated reports
+- Visual representation of question patterns and legal terms
+- Recipient management and sending functionality
 
-To learn more about Next.js, take a look at the following resources:
+## 🔌 API Endpoints
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 📡 `/api/generate-chats` (POST)
+Generates synthetic chat conversations
+- Uses example chat URLs as training data
+- Creates both privacy and commercial law scenarios
+- Returns generated chat data 📤
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 📋 `/api/generate-report` (POST) 
+Generates comprehensive analytics report
+- Analyzes existing chat data 🔍
+- Calculates statistics and patterns 📊
+- Returns structured report data 📈
 
-## Deploy on Vercel
+## 🛠️ Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `pnpm dev` - Start development server with Turbopack
+- `pnpm build` - Build production application
+- `pnpm start` - Start production server
+- `pnpm lint` - Run ESLint
+- `pnpm format` - Format code with Prettier
+- `pnpm typecheck` - Run TypeScript type checking
+- `pnpm generate-chat:start` - Generate synthetic chats via CLI
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ⚙️ Configuration
+
+### 🌍 Environment Variables
+- `ANTHROPIC_API_KEY` - Required for AI chat generation
+
+### 📦 Package Manager
+This project uses pnpm v10.11.0. Ensure you have pnpm installed:
+```bash
+npm install -g pnpm@10.11.0
+```
+
+## ⚖️ Legal Domains Supported
+
+### 🔒 Privacy Law
+- GDPR & International Compliance
+- AI & Privacy regulations
+- Data Breaches & Incident Response
+- Employee Monitoring policies
+- Data Sharing & Transfers
+- Consent & Cookies management
+
+### 📝 Commercial Contracts
+- Contract Risk & Liability assessment
+- Vendor Relationship Management
+- Intellectual Property & Licensing
+- Service Performance & SLAs
+- Payment & Financial Terms
+
+## 👨‍💻 Development
+
+### 🏆 Code Quality
+- ESLint configuration with Prettier integration
+- TypeScript strict mode enabled
+- Automated formatting on save
+
+### 🏗️ Architecture
+- Modular component structure
+- Custom hooks for data management
+- Type-safe API communications
+- Responsive Material-UI design system
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
+
+## 🆘 Support
+
+For questions and support, please refer to the project documentation or contact the project owner.
