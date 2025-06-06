@@ -1,0 +1,43 @@
+Laws and Regulations
+
+What are the federal laws and guidance that relate to the protection of privacy for individuals and businesses?
+
+The Privacy Act of 1974, 5 U.S.C. 552a, provides privacy protections for records containing information about individuals (i.e., citizen and legal permanent resident) that are collected and maintained by the federal government and are retrieved by a personal identifier. The Act requires agencies to safeguard information contained in a system of records.
+
+The Federal Information Security Management Act of 2002, 44 U.S.C. 3541, requires agencies to develop, document, and implement an agency-wide program to provide information security for the information and information systems that support the operations and assets of an agency.
+
+OMB Memorandum M-03-22, Guidance for Implementing the Privacy Provisions of the E-Government Act of 2002 (September 26, 2003), requires agencies to conduct reviews of how information about individuals is handled when information technology (IT) is used to collect new information, or when agencies develop or buy new IT systems to handle collections of personally identifiable information, and to describe how the agency handles information that individuals provide electronically.
+
+OMB Memorandum M-06-15, Safeguarding Personally Identifiable Information (May 22, 2006), reiterates and emphasizes agency responsibilities under law and policy to appropriately safeguard sensitive PII and train employees regarding their responsibilities for protecting privacy.
+
+OMB Memorandum M-06-16, Protection of Sensitive Agency Information (June 23, 2006), requires agencies to implement encryption protections for PII being transported and/or stored offsite.
+
+OMB Memorandum M-06-19, Reporting Incidents Involving Personally Identifiable Information and Incorporating the Cost for Security in Agency Information Technology Investments (July 12, 2006), requires agencies to report all incidents involving PII to US-CERT within one hour of discovery of the incident.
+
+OMB's Memorandum entitled Recommendations for Identity Theft Related Data Breach Notification (September 20, 2006) outlines recommendations to agencies from the President's Identity Theft Task Force for developing agency planning and response procedures for addressing PII incidents that could result in identify theft.
+
+OMB Memorandum M-07-16, Safeguarding Against and Responding to the Breach of Personally Identifiable Information (May 22, 2007), identifies existing procedures and establishes several new actions agencies should take to safeguard PII and to respond to Privacy Incidents.
+
+OMB Memorandum M-11-02, Sharing Data While Protecting Privacy (November 3, 2010), requires agencies to develop and implement solutions that allow data sharing to move forward in a manner that complies with applicable privacy laws, regulations, and policies.
+
+What are the federal laws and guidance that relate to the protection of privacy for individuals and businesses?
+
+The Privacy Act of 1974 (5 U.S.C. 552a) regulates the Federal Government's collection, use, maintenance, and dissemination of information about individuals.
+
+Section 208 of the E-Government Act of 2002 (44 U.S.C. 3601 et seq.) establishes procedures to ensure the privacy of personal information in electronic records.
+
+The Paperwork Reduction Act (PRA) of 1995 (44 U.S.C. 3501 et seq.) is designed to reduce the public's burden of answering unnecessary, duplicative, and burdensome government surveys.
+
+The Trade Secrets Act (18 U.S.C. 1905) provides criminal penalties for the theft of trade secrets and other business identifiable information.
+
+The Children's Online Privacy Protection Act of 1998 (15 U.S.C. 6501-06) regulates the online collection and use of personal information provided by and relating to children under the age of 13.
+
+OMB Circular A-130, "Management of Federal Information Resources," establishes a policy for the management of Federal information resources, including automated information systems.
+
+OMB Memorandum M-03-22, OMB Guidance for Implementing the Privacy Provisions of the E-Government Act of 2002, September 26, 2003, provides specific guidance to agencies for implementing Section 208 of the E-Government Act.
+
+OMB Memorandum M-07-16, Safeguarding Against and Responding to the Breach of Personally Identifiable Information, establishes requirements to review and reduce the volume of PII; eliminate the unnecessary use of social security numbers (SSN); and log all computer-readable data extracts from databases holding sensitive information and verify each extract, including whether sensitive data has been erased within 90 days or its use is still required (pages 6-8).
+
+OMB Memorandum M-06-16, Protection of Agency Sensitive Information, provides guidance for encrypting sensitive data on mobile computers and devices; allowing remote access only with two-factor authentication; using a time-out function for remote access; and logging all computer-readable data extracts from databases holding sensitive information and verify each extract including sensitive data has been erased within 90 days or its use is still required.
+
+OMB Memorandum M-06-15, Safeguarding Personally Identifiable Information, requires that agencies conduct a review of their policies and processes, and take corrective action as appropriate to ensure adequate safeguards to prevent the intentional or negligent misuse of, or unauthorized access to, personally identifiable information.

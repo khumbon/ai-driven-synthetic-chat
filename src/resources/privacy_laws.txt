@@ -1,0 +1,129 @@
+Privacy Laws, Policies and Guidance
+
+General privacy laws, OMB privacy policies and guidance, Departmental policies, and bureau/operating unit privacy policies.
+
+Authorities
+
+- The Privacy Act of 1974, 5 U.S.C. 552a (https://www.commerce.gov/sites/default/files/opog/privacy_act-1974-usc552a.pdf), provides privacy protections for records containing information about individuals (i.e., citizen and legal permanent resident) that are collected and maintained by the federal government and are retrieved by a personal identifier. The Act requires agencies to safeguard information contained in a system of records (SOR). It is currently being revised.
+
+- The Federal Information Security Modernization Act of 2014 (https://www.commerce.gov/sites/default/files/opog/federal_info_security_mod_act-2014.pdf) (amends the Federal Information Security Management Act of 2002, 44 U.S.C. 3541), requires agencies to develop, document, and implement an agency-wide program to provide information security for the information and information systems that support the operations and assets of an agency.
+
+- The E-Government Act of 2002 (https://www.commerce.gov/sites/default/files/opog/e-government-act-2002.pdf) (44 U.S.C. 3601 et seq.) establishes procedures to ensure the privacy of personal information in electronic records.
+
+- Freedom of Information Act (FOIA) (https://www.commerce.gov/sites/default/files/opog/foia-5usc552.pdf) generally provides that any person has a right, enforceable in court, to obtain access to federal agency records, except to the extent that such records (or portions of them) are protected from public disclosure by one of nine exemptions or by one of three special law enforcement record exclusions.
+
+- Trade Secrets Act (https://www.commerce.gov/sites/default/files/opog/trade_secrets_act-18-usc-1905.pdf) (18 U.S.C. 1905) provides criminal penalties for the theft of trade secrets and other business identifiable information.
+
+- Paperwork Reduction Act (PRA) of 1995 (https://www.commerce.gov/sites/default/files/opog/privacy_reduction_act-1995.pdf) (44 U.S.C. 3501 et seq.) is designed to reduce the public's burden of answering unnecessary, duplicative, and burdensome government surveys.
+
+- Children's Online Privacy Protection Act of 1998 (https://www.commerce.gov/sites/default/files/opog/coppa-16-cfr-part-312.pdf) (15 U.S.C. 6501-06) (COPPA) regulates the online collection and use of personal information provided by and relating to children under the age of 13 (COPPA's Online Privacy Protection Rule: https://www.ftc.gov/enforcement/rules/rulemaking-regulatory-reform-proceedings/childrens-online-privacy-protection-rule).
+
+- The Social Security Number Fraud Prevention Act of 2017 (https://www.commerce.gov/sites/default/files/opog/ssn-fraud_prevention_act_2017.pdf) (Public Law 115-59): (1) prohibits federal agencies from including any individual's Social Security account number on any document sent by mail unless the agency head determines that such inclusion is necessary; and (2) requires agencies that have Chief Financial Officers to issue regulations, within five years of this bill's enactment, that specify the circumstances under which such inclusion is necessary.
+
+Office of Management and Budget (OMB) Memoranda
+
+- OMB Memorandum M-01-05 (https://www.commerce.gov/sites/default/files/opog/omb_m-01-05.pdf), Guidance on Inter-Agency Sharing of Personal Data - Protecting Personal Privacy, applies to data matching activities or programs for purposes of establishing or verifying eligibility for Federal benefit programs or recouping payments or delinquent debts under such programs covered by the Computer Matching and Privacy Protection Act ("Matching Act"), an amendment to the Privacy Act of 1974, 5 U.S.C. Section 552a, whether data are shared between Federal agencies or matched with State agency data.
+
+- OMB Memorandum M-03-22 (https://www.commerce.gov/sites/default/files/opog/omb_m-03-22.pdf), Guidance for Implementing the Privacy Provisions of the E-Government Act of 2002 (September 26, 2003), requires agencies to conduct reviews of how information about individuals is handled when information technology (IT) is used to collect new information, or when agencies develop or buy new IT systems to handle collections of personally identifiable information (PII), and describes how the agency handles information that individuals provide electronically.
+
+- OMB Memorandum M-06-16 (https://www.commerce.gov/sites/default/files/opog/omb_m-06-16.pdf), Protection of Sensitive Agency Information (June 23, 2006), requires agencies to implement encryption protections for PII being transported and/or stored offsite, allowing remote access only with two-factor authentication, using a time-out function for remote access, and logging all computer-readable data extracts from databases holding sensitive information; and verifies each extract, including sensitive data, has been erased within 90 days or its use is still required.
+
+- OMB Memorandum M-10-22 (https://www.commerce.gov/sites/default/files/opog/omb_m-10-22.pdf), Guidance for Online Use of Web Measurement and Customization Technologies, establishes new procedures and provides updated guidance and requirements for agency use of web measurement and customization technology.
+
+- OMB Memorandum M-10-23 (https://www.commerce.gov/sites/default/files/opog/omb_m-10-23.pdf), Guidance for Agency use of Third-Party Websites and Applications, requires Federal agencies to take specific steps to protect the individual privacy whenever they use third-party websites and applications to engage with the public.
+
+- OMB Memorandum M-11-02 (https://www.commerce.gov/sites/default/files/opog/omb_m-11-02.pdf), Sharing Data While Protecting Privacy (November 3, 2010), requires agencies to develop and implement solutions that allow data sharing to move forward in a manner that complies with applicable privacy laws, regulations, and policies.
+
+- OMB Memorandum M-13-13 (https://www.commerce.gov/sites/default/files/opog/omb_m-13-13.pdf), Open Data Policy - Managing Information as an Asset requires agencies to collect or create information in a way that supports downstream information processing and dissemination activities. This includes using machine readable and open formats, data standards, and common core and extensible metadata for all new information creation and collection efforts.
+
+- OMB Memorandum M-13-20 (https://www.commerce.gov/sites/default/files/opog/omb_m-13-20.pdf), Protecting Privacy while Reducing Improper Payments with the Do Not Pay Initiative which implements Section 5 of the Improper Payments Elimination and Recovery Improvement Act of 2012 (IPERIA) and provides guidance to help Federal agencies protect privacy while reducing improper payments with the Do Not Pay (DNP) Initiative.
+
+- OMB Memorandum M-14-04 (https://www.commerce.gov/sites/default/files/opog/omb_m-14-04.pdf), Reporting Instructions for the Federal Information Security Management Act and Agency Privacy Management, provides agencies with instructions for meeting their agencies' fiscal year reporting requirements under the Federal Information Security Management Act (FISMA) and includes reporting instructions on agencies' privacy management program.
+
+- OMB Memorandum M-14-06 (https://www.commerce.gov/sites/default/files/opog/omb_m-14-06.pdf), Guidance for Providing and Using Administrative Data for Statistical Purposes, provides agencies with guidance for addressing the legal, policy, and operational issues that exist with respect to using administrative data for statistical purposes.
+
+- OMB Memorandum M-16-04 (https://www.commerce.gov/sites/default/files/opog/omb_m-16-04.pdf), Cybersecurity Strategy and Implementation Plan (CSIP) for the Federal Civilian Government, identifies and addresses critical cybersecurity gaps and emerging priorities, and makes specific recommendations to address those gaps and priorities. The CSIP was developed to assist to strengthen Federal civilian cybersecurity through the following five objectives: (1) Prioritized Identification and Protection of high value information and assets; (2) Timely Detection of and Rapid Response to cyber incidents; (3) Rapid Recovery from incidents when they occur and Accelerated Adoption of lessons learned from the Sprint assessment; (4) Recruitment and Retention of the most highly-qualified Cybersecurity Workforce talent the Federal Government can bring to bear; and (5) Efficient and Effective Acquisition and Deployment of Existing and Emerging Technology.
+
+- OMB Memorandum M-16-14 (https://www.commerce.gov/sites/default/files/opog/omb_m-16-14.pdf), Category Management Policy 16-2: Providing Comprehensive Identity Protection Services, Identity Monitoring, and Data Breach Response (July 1, 2016), which requires federal agencies, with limited exceptions, to address their requirements, when they need to identify protection services, by using the government-wide blanket purchase agreements (BPAs) for Identity Monitoring Data Breach Response and Protection Services (i.e., IPS BPAs) awarded by the General Services Administration (GSA).
+
+- OMB Memorandum M-16-24 (https://www.commerce.gov/sites/default/files/opog/omb_m-16-24.pdf), Role and Designation of Senior Agency Officials for Privacy, revises policies on the role and designation of the Senior Agency Official for Privacy (SAOP), as required by Executive Order 13719, Establishment of the Federal Privacy Council.
+
+- OMB Memorandum 17-06 (https://www.commerce.gov/sites/default/files/opog/omb_memo_17-06.pdf), Policies for Federal Agency Public Websites and Digital Services, updates policies regarding Federal Agency public websites and digital services and requires that each agency maintain a central resource page dedicated to its privacy program on the agency's principal website. The agency's Privacy Program page must serve as a central source for information about the agency's practices with respect to PII. The agency's Privacy Program Page must be located at www.[agency].gov/privacy and must be accessible through the agency's "About" page.
+
+- OMB Memorandum 17-09 (https://www.commerce.gov/sites/default/files/opog/omb_memo_17-09.pdf), Management of Federal High Value Assets, contains general guidance for the planning, identification, categorization, prioritization, reporting, assessment, and remediation of Federal High Value Assets (HVAs), as well as the handling of information related to HVAs by the Federal Government.
+
+- OMB Memorandum 17-12 (https://www.commerce.gov/sites/default/files/opog/omb_m-17-12.pdf), Preparing for and Responding to a Breach of Personally Identifiable Information, which sets forth the policy for Federal agencies to prepare for and respond to a breach of personally identifiable information (PII).
+
+- OMB Memoradum 18-02 (https://www.commerce.gov/sites/default/files/opog/omb_m-18-02.pdf), Fiscal Year (FY) 2017-2018 Guidance on Federal Information Security and Privacy Management Requirements, which provides agencies with FY 2017-2018 Federal Information Security Modernization Act of 2014 (FISMA) reporting guidance and deadlines.
+
+- OMB Memorandum 21-04, Modernizing Access to and Consent for Disclosure of Records Subject to the Privacy Act (https://www.commerce.gov/sites/default/files/opog/omb_m-21-04.pdf), which provides guidance for Federal agencies to modernize the processes by which individuals may request access to, and consent to the disclosure of, records protected under the Privacy Act of 1974. As required by the Creating Advanced Streamlined Electronic Services for Constituents Act of 2019 ("CASES Act"), this guidance outlines the responsibilities of agencies for accepting access and consent forms provided in a digital format from individuals who are properly identity-proofed and authenticated.
+
+- Memorandum for Privacy Act Officers of Departments and Agencies (https://www.commerce.gov/sites/default/files/opog/omb-memo-biennial_reporting_requirements_pact.pdf), Status of Biennial Reporting Requirements under the Privacy Act and the Computer Matching and Privacy Protection Act (June 21, 2000), streamlines some of the reporting requirements for federal departments and agencies under OMB Circular A-130, Appendix I.
+
+- Model Privacy Impact Assessment for Agency Use of Third-Party Websites and Applications (https://www.commerce.gov/sites/default/files/opog/model-pia-agency-use-third-party-websites-and-applications.pdf) (December 29, 2011), is the required PIA model for agencies to use when preparing an adapted PIA before engaging the public through third-party websites and applications.
+
+OMB Circulars
+
+- OMB Circular A-108 (https://www.commerce.gov/sites/default/files/opog/omb_circular_a-108.pdf), Federal Agency Responsibilities for Review, Reporting, and Publication under the Privacy Act, which describes agency responsibilities for implementing the review, reporting, and publication requirements of the Privacy Act of 1974 ("the Privacy Act"), and related OMB policies.
+
+- OMB Circular A-123 (https://www.commerce.gov/sites/default/files/opog/omb_circular_a-123.pdf), Management's Responsibility for Internal Control, which defines management's responsibility for internal control in Federal agencies. The policy changes in this circular are intended to strengthen the requirements for conducting management's assessment of internal control over financial reporting. The circular also emphasizes the need for agencies to integrate and coordinate internal control assessments with other internal control-related activities.
+
+- OMB Circular A-130 (https://www.commerce.gov/sites/default/files/opog/omb_circular_a-130revised.pdf), Management of Federal Information Resources, provides uniform government-wide information resources management policies as required by the Paperwork Reduction Act of 1980, as amended by the Paperwork Reduction Act of 1995, 44 U.S.C. Chapter 35.
+
+Privacy Guidance
+
+- DOC Privacy Program Plan (https://www.commerce.gov/sites/default/files/opog/privacy_program_plan.pdf) - An overview of the Department's privacy program.
+
+- DOC Continuous Monitoring Strategy (https://www.commerce.gov/sites/default/files/opog/privacy_continuous_monitoring_strategy_fy20.pdf) - Determines if the complete set of planned, required, and deployed privacy controls, within an information system or inherited by the system, continue to be effective over time in light of the inevitable changes that occur.
+
+- DOC Guide to Effective Privacy Impact Assessments (PIA) (https://www.commerce.gov/sites/default/files/opog/pia_guide_september_2020.pdf) - This guide provides a framework for conducting PIAs at the Department of Commerce (DOC or Department) and a methodology for assessing how PII is to be managed in electronic information systems. The DOC Senior Agency Official for Privacy (SAOP)/Chief Privacy Officer (CPO) requires that all PIAs at the Department be conducted in accordance with this guidance.
+
+- DOC Privacy Overlays (https://www.commerce.gov/sites/default/files/opog/privacy_overlays_entire_document.pdf) - Specification of security controls, control enhancements, supplemental guidance, and other supporting information that is intended to complement (and further refine) security control baselines. The purposes of the privacy overlays include implementing standard security and privacy controls for systems containing PII, ensuring integration of privacy considerations into the system development life cycle and security processes in the early stages, and providing guidance for privacy requirements for protected health information.
+
+Department of Commerce (DOC) Policies
+
+- Delegation of SAOP Concurrence for Re-issuance of an ATO for PII/BII Processing Systems Eligible for the Re-certification Process (https://www.commerce.gov/sites/default/files/opog/privacy_bulletin_002_fy2020_re-certification_process.pdf) - Privacy Bulletin #002 provides the criteria, as well as instruction to the Bureau Chief Privacy Officers (BPCOs) on reviewing and approving Privacy Impact Assessments (PIAs) for PII processing systems which are eligible for the re-certification process.
+
+- Delegation of SAOP Concurrence for Re-issuance of an ATO for Low PII Confidentiality Impact Level Processing Systems (https://www.commerce.gov/sites/default/files/opog/privacy_bulletin_003_fy2020_crb_meetings_low.pdf) - Privacy Bulletin #003 provides the criteria, as well as instruction to the Bureau Chief Privacy Officers (BPCOs) on reviewing and approving Privacy Impact Assessments (PIAs) for Low PII Confidentiality Impact Level processing systems that require a Compliance Review Board (CRB) meeting.
+
+- Departmental Privacy Standards for Commerce Data Loss Prevention (DLP) Security Tools (https://www.commerce.gov/sites/default/files/opog/dlp-memo_04152016.pdf) - this memorandum establishes the requirement for all bureaus/operating units (BOUs) to configure their DLP security tools to implement privacy control capabilities that meet Departmental privacy DLP standards.
+
+- DOC Social Security Numbers (SSNs) Justification Process Memorandum (https://www.commerce.gov/sites/default/files/opog/doc_ssn_justification_process_memo_2017.pdf) - As part of Commerce's ongoing SSN reduction effort, this memorandum documents the process requirements for justifying SSN collections.
+
+- DOC Un-redacted SSN Mailed Documents Listing (USMDL) (https://www.commerce.gov/opog/privacy/USMDL) - the Department's approved list of designated documents for which the inclusion of SSN is determined to be necessary to fulfill a compelling Department business need when the documents are requested by individuals outside the Department or other Federal agencies, as determined jointly by the Senior Agency Official for Privacy (SAOP) and the Departmental Privacy Act Officer.
+
+- Issuance of an Authorization to Operate (ATO) (https://www.commerce.gov/sites/default/files/opog/omb_14-04_ato_memo_11182014.pdf) - this memorandum documents Commerce Policy regarding 1) implementing National Institute of Standards and Technology (NIST) Special Publication (SP) 800-53 Revision 4, Appendix J Privacy Controls; and 2) SAOP Approval as a precondition for the issuance of an ATO.
+
+- Notifying Management Officials (https://www.commerce.gov/sites/default/files/opog/memo_notifying_mgmt_ofcls_2015.pdf) - This memorandum contains the procedures on notifying officials on individuals (employees and contractors) who fail to safeguard sensitive personally Identifiable Information (PII).
+
+Bureau/Operating Unit Privacy Policies
+
+- Commerce Privacy Policy (https://www.commerce.gov/page/privacy-policy)
+
+- Bureau of Economic Analysis (BEA) Privacy Policy (http://www.bea.gov/about/Privacy_Statement.htm)
+
+- Bureau of Industry and Security (BIS) Privacy Policy (http://www.bis.doc.gov/PrivacyInfo.html)
+
+- Bureau of the Census Privacy Policy (http://www.census.gov/privacy/)
+
+- Economic Development Administration (EDA) Privacy Policy (https://www.commerce.gov/page/privacy-policy)
+
+- Economics and Statistics Administration (ESA) Privacy Policy (http://www.esa.gov/privacy-policy)
+
+- International Trade Administration (ITA) Privacy Policy (http://trade.gov/privacy.asp)
+
+- Minority Business Development Agency (MBDA) Privacy Policy (http://www.mbda.gov/privacy-policy)
+
+- National Oceanic and Atmospheric Administration (NOAA) Privacy Policy (http://www.noaa.gov/protecting-your-privacy)
+
+- National Institute of Standards and Technology Privacy Policy (https://www.nist.gov/privacy-policy#privpolicy)
+
+- National Telecommunications and Information Administration (NTIA) Privacy Policy (https://www.ntia.doc.gov/page/2011/ntia-privacy-policy)
+
+- National Technical Information Service (NTIS) Privacy Policy (https://www.ntis.gov/privacy/)
+
+- Office of Inspector General (OIG) Privacy Policy (https://www.oig.doc.gov/pages/Privacy-Policy.aspx)
+
+- Office of the Secretary (OS) Privacy Policy (https://www.commerce.gov/page/privacy-policy)
+
+- United States Patent and Trademark Office (https://www.uspto.gov/privacy-policy)
