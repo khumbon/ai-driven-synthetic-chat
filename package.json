@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@10.11.0",
-  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -13,8 +12,8 @@
     "format": "prettier -l --write \"**/*.{ts,tsx,js,jsx,json,less,css,md}\"",
     "format:fix": "yarn format --write",
     "typecheck": "tsc --noEmit",
-    "generate-chat:start": "node --loader ts-node/esm src/api/chatGenerator/index.ts",
-    "testGenerateReportData": "ts-node -r tsconfig-paths/register src/api/analysis/testGenerateReportData-delete.js"
+    "generate-chat:start": "ts-node -r tsconfig-paths/register src/api/chatGenerator/index.js",
+    "testGenerateReportData": "ts-node -r tsconfig-paths/register src/api/analysis/index.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.52.0",

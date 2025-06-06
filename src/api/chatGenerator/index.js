@@ -1,5 +1,5 @@
 import { generateSyntheticChats } from './orchestrator';
-import { exampleChatUrls } from '@/resources/exampleChats';
+import { exampleChatUrls } from '../../resources/exampleChats';
 import dotenv from 'dotenv';
 
 dotenv.config();
