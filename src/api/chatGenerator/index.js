@@ -1,5 +1,4 @@
 import { generateSyntheticChats } from './orchestrator';
-import { exampleChatUrls } from '../../resources/exampleChats';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -14,7 +13,9 @@ export const generateChats = async () => {
   }
 
   try {
-    const syntheticChats = await generateSyntheticChats(apiKey, exampleChatUrls);
+    const syntheticChats = await generateSyntheticChats(apiKey);
+    console.log('syntheticChats');
+    console.log(syntheticChats);
     console.log(`Generated ${syntheticChats.privacyChats.length} privacy lawyer chats`);
     console.log(`Generated ${syntheticChats.commercialChats.length} commercial contracts lawyer chats`);
     return syntheticChats;

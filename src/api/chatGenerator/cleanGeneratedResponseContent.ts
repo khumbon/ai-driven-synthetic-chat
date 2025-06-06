@@ -1,263 +1,292 @@
 import { ContentBlock } from '@anthropic-ai/sdk/resources/messages.js';
 
-// Extract JSON from markdown code blocks - improved version
+// Extract JSON from markdown code blocks - improved version with better debugging
 const extractJsonFromMarkdown = (text: string): string => {
-  // First try the standard regex
+  console.log('=== EXTRACTING JSON FROM MARKDOWN ===');
+  console.log('Input text length:', text.length);
+  console.log('First 200 chars:', JSON.stringify(text.slice(0, 200)));
+  console.log('Last 200 chars:', JSON.stringify(text.slice(-200)));
+
+  // Strategy 1: Look for standard markdown code blocks
   const codeBlockRegex = /```(?:json)?\s*([\s\S]*?)\s*```/;
   const match = text.match(codeBlockRegex);
 
   if (match) {
-    return match[1].trim();
+    console.log('✅ Found standard code block');
+    const extracted = match[1].trim();
+    console.log('Extracted length:', extracted.length);
+    console.log('Extracted starts with:', JSON.stringify(extracted.slice(0, 50)));
+    return extracted;
   }
 
-  // If that fails, try more aggressive cleaning
-  let cleaned = text.trim();
+  // Strategy 2: Look for JSON arrays that start with [ and try to find the end
+  const arrayStartRegex = /\[\s*\{/;
+  const arrayStartMatch = text.search(arrayStartRegex);
 
-  // Remove opening code block markers
+  if (arrayStartMatch !== -1) {
+    console.log('✅ Found JSON array start at position:', arrayStartMatch);
+    let jsonContent = text.substring(arrayStartMatch);
+
+    // Try to find the end by balancing brackets
+    let bracketCount = 0;
+    let endPos = -1;
+
+    for (let i = 0; i < jsonContent.length; i++) {
+      const char = jsonContent[i];
+      if (char === '[') bracketCount++;
+      else if (char === ']') {
+        bracketCount--;
+        if (bracketCount === 0) {
+          endPos = i + 1;
+          break;
+        }
+      }
+    }
+
+    if (endPos > 0) {
+      jsonContent = jsonContent.substring(0, endPos);
+      console.log('✅ Found complete JSON array, length:', jsonContent.length);
+      return jsonContent;
+    } else {
+      console.log('⚠️ Found array start but no clean end, using full content');
+      return jsonContent;
+    }
+  }
+
+  // Strategy 3: Aggressive cleaning - remove markdown formatting
+  let cleaned = text.trim();
+  console.log('📝 Applying aggressive cleaning...');
+
+  // Remove various markdown code block patterns
   cleaned = cleaned.replace(/^```json\s*/i, '');
   cleaned = cleaned.replace(/^```\s*/, '');
-
-  // Remove closing code block markers
   cleaned = cleaned.replace(/\s*```$/, '');
-
-  // Remove any remaining backticks at start/end
   cleaned = cleaned.replace(/^`+/, '');
   cleaned = cleaned.replace(/`+$/, '');
 
-  return cleaned.trim();
+  // Remove any leading/trailing whitespace or newlines
+  cleaned = cleaned.trim();
+
+  // If it starts with a backslash, try to remove escaped characters
+  if (cleaned.startsWith('\\')) {
+    console.log('⚠️ Content starts with backslash, attempting to unescape...');
+    // Try to unescape common patterns
+    cleaned = cleaned.replace(/\\"/g, '"');
+    cleaned = cleaned.replace(/\\n/g, '\n');
+    cleaned = cleaned.replace(/\\t/g, '\t');
+    cleaned = cleaned.replace(/\\r/g, '\r');
+    cleaned = cleaned.replace(/\\\\/g, '\\');
+
+    // If it still starts with backslash, remove leading backslashes
+    cleaned = cleaned.replace(/^\\+/, '');
+  }
+
+  console.log('Cleaned length:', cleaned.length);
+  console.log('Cleaned starts with:', JSON.stringify(cleaned.slice(0, 50)));
+  console.log('Cleaned ends with:', JSON.stringify(cleaned.slice(-50)));
+
+  return cleaned;
 };
 
 // Complete incomplete JSON by finding the last valid structure
 const completeJson = (jsonString: string): string => {
-  let completed = jsonString.trim();
+  console.log('=== COMPLETING JSON ===');
+  console.log('Input length:', jsonString.length);
+  console.log('Input starts with:', JSON.stringify(jsonString.slice(0, 100)));
 
-  // First, try to identify what structure we're dealing with
-  // Look for the overall structure: should be an array of chat objects
+  const completed = jsonString.trim();
 
-  // Strategy 1: Check if we have a complete structure that just needs closing
+  // Quick validation - make sure it looks like JSON
+  if (!completed.startsWith('[') && !completed.startsWith('{')) {
+    console.log('❌ Content does not start with [ or {');
+    throw new Error('Content does not appear to be JSON - starts with: ' + JSON.stringify(completed.slice(0, 20)));
+  }
+
+  // Count brackets and braces for basic structure validation
   const openBraces = (completed.match(/{/g) || []).length;
   const closeBraces = (completed.match(/}/g) || []).length;
   const openBrackets = (completed.match(/\[/g) || []).length;
   const closeBrackets = (completed.match(/\]/g) || []).length;
 
-  // If brackets/braces are reasonably balanced, try minimal completion first
+  console.log('Bracket/brace counts:', { openBraces, closeBraces, openBrackets, closeBrackets });
+
   const bracesDiff = openBraces - closeBraces;
   const bracketsDiff = openBrackets - closeBrackets;
 
-  if (bracesDiff <= 3 && bracketsDiff <= 1) {
-    // Try minimal completion - just add missing closing brackets/braces
+  // Strategy 1: If reasonably balanced, try minimal completion
+  if (bracesDiff >= 0 && bracesDiff <= 5 && bracketsDiff >= 0 && bracketsDiff <= 2) {
+    console.log('📝 Attempting minimal completion...');
     let minimal = completed;
 
-    // Check if we're in the middle of a string that got cut off
-    const lastQuoteIndex = minimal.lastIndexOf('"');
-    const lastColonIndex = minimal.lastIndexOf(':');
-    const lastCommaIndex = minimal.lastIndexOf(',');
+    // Remove any incomplete trailing content
+    const trimPatterns = [
+      /,\s*$/, // trailing comma
+      /:\s*$/, // incomplete key-value pair
+      /"\s*$/, // incomplete string at end (but not if it's a complete field)
+    ];
 
-    // If we end with an incomplete value (after : or ,), try to clean it up
-    if (lastColonIndex > lastQuoteIndex || lastCommaIndex > lastQuoteIndex) {
-      // We might have an incomplete value, remove it
-      const cutoffPoint = Math.max(lastColonIndex, lastCommaIndex);
-      const beforeCutoff = minimal.substring(0, cutoffPoint);
-
-      // Check if we can find a good place to cut (end of previous complete field)
-      const prevQuoteIndex = beforeCutoff.lastIndexOf('"');
-      if (prevQuoteIndex > 0) {
-        minimal = minimal.substring(0, prevQuoteIndex + 1);
+    for (const pattern of trimPatterns) {
+      if (pattern.test(minimal)) {
+        console.log('Trimming pattern:', pattern);
+        minimal = minimal.replace(pattern, '');
       }
     }
 
-    // Remove any trailing commas before closing
-    minimal = minimal.replace(/,\s*$/, '');
-
-    // Add missing closing braces
+    // Add missing closing braces and brackets
     for (let i = 0; i < bracesDiff; i++) {
       minimal += '\n  }';
     }
-
-    // Add missing closing brackets
     for (let i = 0; i < bracketsDiff; i++) {
       minimal += '\n]';
     }
 
-    // Clean up any trailing commas before closing brackets
+    // Clean up formatting
     minimal = minimal.replace(/,(\s*[}\]])/g, '$1');
 
-    // Test if this works
     try {
       JSON.parse(minimal);
+      console.log('✅ Minimal completion succeeded');
       return minimal;
-    } catch {
-      // Minimal completion failed, fall through to more aggressive strategies
+    } catch (error) {
+      console.log('❌ Minimal completion failed:', error);
     }
   }
 
-  // Strategy 2: Find the last complete chat object (not just message)
-  // Look for pattern: "category": "some_category" }
-  const lastCompleteChatRegex = /.*"category":\s*"[^"]*"\s*}/s;
-  const chatMatch = completed.match(lastCompleteChatRegex);
+  // Strategy 2: Find last complete chat object
+  console.log('📝 Looking for last complete chat object...');
+  const chatCompleteRegex = /"category":\s*"[^"]*"\s*}\s*(?:,\s*)?(?=\s*[\]\}]|$)/g;
+  let lastChatMatch;
+  let match;
 
-  if (chatMatch) {
-    completed = chatMatch[0];
+  while ((match = chatCompleteRegex.exec(completed)) !== null) {
+    lastChatMatch = match;
+  }
 
-    // Close the main array if needed
-    if (!completed.trim().endsWith(']')) {
-      completed += '\n]';
+  if (lastChatMatch) {
+    const cutPoint = lastChatMatch.index + lastChatMatch[0].length;
+    let truncated = completed.substring(0, cutPoint);
+
+    // Ensure proper closing
+    if (!truncated.trim().endsWith(']')) {
+      truncated += '\n]';
     }
 
     try {
-      JSON.parse(completed);
-      return completed;
-    } catch {
-      // Continue to next strategy
+      JSON.parse(truncated);
+      console.log('✅ Chat object completion succeeded');
+      return truncated;
+    } catch (error) {
+      console.log('❌ Chat object completion failed:', error);
     }
   }
 
-  // Strategy 3: Find the last complete message and build from there
-  // But be more conservative - look for complete message within complete chat
-  const lastCompleteMessageRegex = /.*"timestamp":\s*"[^"]*"\s*}\s*(?=\s*\])/s;
-  const messageMatch = completed.match(lastCompleteMessageRegex);
+  // Strategy 3: Find last complete message
+  console.log('📝 Looking for last complete message...');
+  const messageCompleteRegex = /"timestamp":\s*"[^"]*"\s*}/g;
+  let lastMessageMatch;
 
-  if (messageMatch) {
-    let result = messageMatch[0];
+  while ((match = messageCompleteRegex.exec(completed)) !== null) {
+    lastMessageMatch = match;
+  }
 
-    // Complete the structure: close messages array, close chat object, close main array
-    if (!result.includes('\n    ]')) {
-      result += '\n    ]';
+  if (lastMessageMatch) {
+    const cutPoint = lastMessageMatch.index + lastMessageMatch[0].length;
+    let truncated = completed.substring(0, cutPoint);
+
+    // Complete the structure
+    if (!truncated.includes('    ]')) {
+      truncated += '\n    ]';
     }
-    if (!result.includes('\n  }')) {
-      result += '\n  }';
+    if (!truncated.includes('  },')) {
+      truncated += ',\n    "category": "privacy"\n  }';
     }
-    if (!result.trim().endsWith(']')) {
-      result += '\n]';
+    if (!truncated.trim().endsWith(']')) {
+      truncated += '\n]';
     }
+
+    // Clean formatting
+    truncated = truncated.replace(/,(\s*[}\]])/g, '$1');
 
     try {
-      JSON.parse(result);
-      return result;
-    } catch {
-      // Continue to fallback
+      JSON.parse(truncated);
+      console.log('✅ Message completion succeeded');
+      return truncated;
+    } catch (error) {
+      console.log('❌ Message completion failed:', error);
     }
   }
 
-  // Strategy 4: Fallback - balance brackets from current state (original logic)
-  const missingBraces = Math.max(0, openBraces - closeBraces);
-  const missingBrackets = Math.max(0, openBrackets - closeBrackets);
+  // Strategy 4: Fallback - simple bracket balancing
+  console.log('📝 Fallback: simple bracket balancing...');
+  let fallback = completed;
 
-  for (let i = 0; i < missingBraces; i++) {
-    completed += '\n  }';
+  for (let i = 0; i < Math.max(0, bracesDiff); i++) {
+    fallback += '\n  }';
+  }
+  for (let i = 0; i < Math.max(0, bracketsDiff); i++) {
+    fallback += '\n]';
   }
 
-  for (let i = 0; i < missingBrackets; i++) {
-    completed += '\n]';
-  }
+  fallback = fallback.replace(/,(\s*[}\]])/g, '$1');
 
-  // Clean up any trailing commas before closing brackets
-  completed = completed.replace(/,(\s*[}\]])/g, '$1');
-
-  return completed;
+  console.log('Fallback result length:', fallback.length);
+  return fallback;
 };
 
 // Check if JSON appears complete
 const isJsonComplete = (jsonString: string): boolean => {
   try {
-    JSON.parse(jsonString);
-    return true;
-  } catch {
+    const parsed = JSON.parse(jsonString);
+    console.log('✅ JSON is valid and complete');
+    return parsed;
+  } catch (error) {
+    console.log('❌ JSON is incomplete:', error);
     return false;
   }
 };
 
-// Parse and complete JSON from Anthropic response - with detailed debugging
+// Main function with comprehensive error handling
 export const cleanGeneratedResponseContent = (content: ContentBlock) => {
+  console.log('\n=== STARTING JSON CLEANING PROCESS ===');
+
   if (content.type !== 'text') {
     throw new Error(`Unexpected content type: ${content.type}`);
   }
 
-  //console.log('=== DEBUGGING JSON EXTRACTION ===');
-  //console.log('Raw content length:', content.text.length);
-  //console.log('Content ends with:', JSON.stringify(content.text.slice(-100)));
+  console.log('Raw content length:', content.text.length);
 
-  // Extract JSON from markdown
-  const cleanJsonString = extractJsonFromMarkdown(content.text);
+  try {
+    // Step 1: Extract JSON from markdown
+    const extractedJson = extractJsonFromMarkdown(content.text);
 
-  //console.log('Extracted JSON length:', cleanJsonString.length);
-  //console.log('Extracted ends with:', JSON.stringify(cleanJsonString.slice(-100)));
-
-  // Check if it's already complete
-  if (isJsonComplete(cleanJsonString)) {
-    //console.log('✅ JSON is complete');
-    return JSON.parse(cleanJsonString);
-  }
-
-  // The JSON is incomplete - look at what we have
-  //console.log('⚠️ JSON appears incomplete, attempting to fix...');
-  //console.log('Checking structure...');
-
-  // Check if we can find where it cuts off
-  const hasBracketAtEnd = cleanJsonString.trim().endsWith(']');
-  const hasBraceAtEnd = cleanJsonString.trim().endsWith('}');
-  const endsWithQuote = cleanJsonString.trim().endsWith('"');
-
-  //console.log('Ends with ]:', hasBracketAtEnd);
-  //console.log('Ends with }:', hasBraceAtEnd);
-  //console.log('Ends with ":', endsWithQuote);
-
-  // Try multiple completion strategies
-  let attempts = 0;
-  const strategies = [
-    () => {
-      //console.log('Strategy 1: Smart truncation and completion');
-      return completeJson(cleanJsonString);
-    },
-    () => {
-      //console.log('Strategy 2: Remove incomplete trailing content');
-      // Remove any incomplete trailing string that doesn't end with quote
-      let cleaned = cleanJsonString;
-      if (!endsWithQuote && !hasBraceAtEnd && !hasBracketAtEnd) {
-        // Find last complete quote and cut there
-        const lastQuoteIndex = cleaned.lastIndexOf('"');
-        if (lastQuoteIndex > 0) {
-          cleaned = cleaned.substring(0, lastQuoteIndex + 1);
-        }
-      }
-      return completeJson(cleaned);
-    },
-    () => {
-      //console.log('Strategy 3: Cut at last complete message');
-      const lastTimestamp = cleanJsonString.lastIndexOf('"timestamp":');
-      if (lastTimestamp > 0) {
-        const afterTimestamp = cleanJsonString.substring(lastTimestamp);
-        const nextBrace = afterTimestamp.indexOf('}');
-        if (nextBrace > 0) {
-          const cutPoint = lastTimestamp + nextBrace + 1;
-          const truncated = cleanJsonString.substring(0, cutPoint);
-          return completeJson(truncated);
-        }
-      }
-      return completeJson(cleanJsonString);
-    },
-  ];
-
-  for (const strategy of strategies) {
-    try {
-      attempts++;
-      //console.log(`\n--- Attempt ${attempts} ---`);
-      const completedJson = strategy();
-
-      //console.log('Completed JSON length:', completedJson.length);
-      //console.log('Completed ends with:', JSON.stringify(completedJson.slice(-50)));
-
-      const parsed = JSON.parse(completedJson);
-      //console.log(`✅ Strategy ${attempts} succeeded!`);
-      //console.log('Parsed', Array.isArray(parsed) ? parsed.length : 'non-array', 'items');
-      return parsed;
-    } catch (error) {
-      //console.log(`❌ Strategy ${attempts} failed:`, error);
-      if (attempts === strategies.length) {
-        //console.log('=== All strategies failed ===');
-        //console.log('Last 500 chars of original:', cleanJsonString.slice(-500));
-        throw new Error(`Unable to complete JSON after ${attempts} attempts: ${error}`);
-      }
+    if (!extractedJson) {
+      throw new Error('No JSON content could be extracted from the response');
     }
+
+    // Step 2: Check if already complete
+    if (isJsonComplete(extractedJson)) {
+      const parsed = JSON.parse(extractedJson);
+      console.log('✅ JSON was already complete, parsed successfully');
+      console.log('Result type:', Array.isArray(parsed) ? `array with ${parsed.length} items` : typeof parsed);
+      return parsed;
+    }
+
+    // Step 3: Attempt completion
+    console.log('\n=== ATTEMPTING JSON COMPLETION ===');
+    const completedJson = completeJson(extractedJson);
+
+    const parsed = JSON.parse(completedJson);
+    console.log('✅ JSON completion successful');
+    console.log('Result type:', Array.isArray(parsed) ? `array with ${parsed.length} items` : typeof parsed);
+    return parsed;
+  } catch (error) {
+    console.log('\n=== CLEANUP FAILED ===');
+    console.log('Error:', error);
+    console.log('Raw content sample (first 500 chars):');
+    console.log(JSON.stringify(content.text.slice(0, 500)));
+    console.log('\nRaw content sample (last 500 chars):');
+    console.log(JSON.stringify(content.text.slice(-500)));
+
+    throw new Error(`JSON cleanup failed: ${error}`);
   }
 };

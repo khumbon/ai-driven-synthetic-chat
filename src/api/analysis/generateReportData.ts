@@ -1,3 +1,4 @@
+import { generateChats } from '../chatGenerator';
 import { ReportSummary } from '../types';
 import { calculateMessageStatistics } from './calculateMessageStatistics';
 import { categorizeCommercialTopics, categorizePrivacyTopics } from './categoriseTitles';
@@ -5,7 +6,48 @@ import { extractUserQuestions } from './extractUserQuestions';
 import { analyseQuestionPatterns } from './patternAnalysis';
 import { loadChatDataFromDirectory } from './readGeneratedChatFiles';
 
-export const generateReportData = () => {
+export const generateReportData = async () => {
+  const chats = await generateChats();
+  console.log('chats');
+  console.log(chats);
+
+  if (!chats) {
+    return;
+  }
+  const { privacyChats, commercialChats } = chats;
+
+  const allChats = [...commercialChats, ...privacyChats];
+
+  const userQuestions = extractUserQuestions(allChats);
+
+  const privacyTopics = categorizePrivacyTopics(privacyChats);
+  const commercialContractTopics = categorizeCommercialTopics(commercialChats);
+
+  const patterns = analyseQuestionPatterns(userQuestions);
+
+  const statistics = calculateMessageStatistics(allChats);
+
+  const summary: ReportSummary = {
+    totalConversations: allChats.length,
+    totalUserQuestions: patterns.totalQuestions,
+    avgMessagesPerChat: statistics.avgMessagesPerChat,
+    avgQuestionsPerChat: statistics.avgUserQuestionsPerChat,
+  };
+  console.log('summary', summary);
+  console.log('privacyTopics', privacyTopics);
+  console.log('commercialContractTopics', commercialContractTopics);
+  console.log('patterns', patterns);
+  return {
+    summary,
+    privacyTopics,
+    commercialContractTopics,
+    patterns: patterns.patterns,
+    statistics,
+    mostCommonTerms: patterns.mostCommonTerms,
+  };
+};
+
+export const generateReportDataFromDirectory = () => {
   const directoryPath = 'C:/Users/khumb/OneDrive/Documents/dev/ai-driven-synthetic-chat/output';
   const loadedChats = loadChatDataFromDirectory(directoryPath);
   if (!loadedChats) {

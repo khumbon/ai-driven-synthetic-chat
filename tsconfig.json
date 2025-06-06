@@ -25,6 +25,14 @@
   "ts-node": {
     "esm": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/resources/exampleChats.js", "src/api/chatGenerator/index.js", "src/api/analysis/index.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/resources/exampleChats.js",
+    "src/api/chatGenerator/index.js",
+    "src/api/analysis/index.js"
+  ],
   "exclude": ["node_modules"]
 }

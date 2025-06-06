@@ -78,8 +78,16 @@ const Home: React.FC = () => {
   const [emailsSent, setEmailsSent] = useState(false);
 
   const { mutate: mutateGenerateChats } = useGenerateChats();
-  const { mutate: mutateGenerateReport, data: reportData } = useGenerateReport();
+  const {
+    mutate: mutateGenerateReport,
+    data: reportData,
+    isPending: reportPending,
+    isError: isReportError,
+    error: reportError,
+  } = useGenerateReport();
 
+  console.log('reportPending');
+  console.log(reportPending);
   const handleGenerateChats = () => {
     mutateGenerateChats();
   };
@@ -257,14 +265,15 @@ const Home: React.FC = () => {
                 </Box>
 
                 {/* Loading State */}
-                {isGenerating && (
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 8 }}>
-                    <CircularProgress sx={{ mr: 2 }} />
-                    <Typography variant="body2" color="text.secondary">
-                      Generating email report...
-                    </Typography>
-                  </Box>
-                )}
+                {isGenerating ||
+                  (reportPending && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 8 }}>
+                      <CircularProgress sx={{ mr: 2 }} />
+                      <Typography variant="body2" color="text.secondary">
+                        Generating email report...
+                      </Typography>
+                    </Box>
+                  ))}
 
                 {/* Email Preview */}
                 {(emailGenerated || !isGenerating) && reportData && (
