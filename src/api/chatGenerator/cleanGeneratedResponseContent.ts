@@ -1,292 +1,272 @@
 import { ContentBlock } from '@anthropic-ai/sdk/resources/messages.js';
+import { Category, SyntheticChat } from '../types';
 
-// Extract JSON from markdown code blocks - improved version with better debugging
-const extractJsonFromMarkdown = (text: string): string => {
-  console.log('=== EXTRACTING JSON FROM MARKDOWN ===');
-  console.log('Input text length:', text.length);
-  console.log('First 200 chars:', JSON.stringify(text.slice(0, 200)));
-  console.log('Last 200 chars:', JSON.stringify(text.slice(-200)));
+enum ChatRole {
+  User = 'user',
+  Assistant = 'assistant',
+}
 
-  // Strategy 1: Look for standard markdown code blocks
-  const codeBlockRegex = /```(?:json)?\s*([\s\S]*?)\s*```/;
-  const match = text.match(codeBlockRegex);
+interface SyntheticChatMessage {
+  role: ChatRole;
+  content: string;
+  timestamp: string;
+}
 
-  if (match) {
-    console.log('✅ Found standard code block');
-    const extracted = match[1].trim();
-    console.log('Extracted length:', extracted.length);
-    console.log('Extracted starts with:', JSON.stringify(extracted.slice(0, 50)));
-    return extracted;
+interface RawChatMessage {
+  role: string;
+  content: string;
+  timestamp: string;
+}
+
+interface RawChat {
+  id: string;
+  title: string;
+  messages: Array<RawChatMessage>;
+  category: string;
+}
+
+/**
+ * Simplified version focusing on core validation
+ */
+export const cleanGeneratedResponseContent = (content: ContentBlock): SyntheticChat[] => {
+  console.log('\n=== CLEANING GENERATED CONTENT ===');
+
+  if (!content || content.type !== 'text') {
+    throw new Error('Unexpected content');
   }
 
-  // Strategy 2: Look for JSON arrays that start with [ and try to find the end
-  const arrayStartRegex = /\[\s*\{/;
-  const arrayStartMatch = text.search(arrayStartRegex);
+  try {
+    // Basic content validation
+    if (!content?.text) {
+      console.error('No text content found');
+      return [];
+    }
 
-  if (arrayStartMatch !== -1) {
-    console.log('✅ Found JSON array start at position:', arrayStartMatch);
-    let jsonContent = text.substring(arrayStartMatch);
+    console.log('Content length:', content.text.length);
 
-    // Try to find the end by balancing brackets
-    let bracketCount = 0;
+    // Extract JSON (handle markdown code blocks)
+    let jsonText = content.text.trim();
+    const codeBlockMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    if (codeBlockMatch) {
+      jsonText = codeBlockMatch[1].trim();
+    }
+
+    // Parse JSON
+    let rawChats: RawChat[];
+    try {
+      rawChats = JSON.parse(jsonText);
+    } catch (parseError) {
+      console.error('JSON parsing failed:', parseError);
+      console.error('First 200 chars:', jsonText.substring(0, 200));
+      console.error('Last 200 chars:', jsonText.substring(Math.max(0, jsonText.length - 200)));
+      return [];
+    }
+
+    // Validate array
+    if (!Array.isArray(rawChats)) {
+      console.error('Expected array, got:', typeof rawChats);
+      return [];
+    }
+
+    // Transform chats with basic validation
+    const cleanedChats: SyntheticChat[] = [];
+
+    for (const rawChat of rawChats) {
+      const cleaned = transformChat(rawChat);
+      if (cleaned) {
+        cleanedChats.push(cleaned);
+      }
+    }
+
+    console.log(`✅ Processed ${cleanedChats.length}/${rawChats.length} chats`);
+    return cleanedChats;
+  } catch (error) {
+    console.error('Cleaning failed:', error);
+    return [];
+  }
+};
+
+/**
+ * Transform and validate a single chat with essential checks only
+ */
+function transformChat(rawChat: RawChat): SyntheticChat | null {
+  // ADD THIS DEBUG LOGGING:
+  console.log('🔍 Raw chat structure:', {
+    id: rawChat?.id,
+    title: rawChat?.title,
+    messages: rawChat?.messages ? 'exists' : 'missing',
+    category: rawChat?.category,
+    allKeys: rawChat ? Object.keys(rawChat) : 'no object',
+  });
+
+  // Essential field validation
+  if (!rawChat?.id || !rawChat?.title || !rawChat?.messages || !rawChat?.category) {
+    console.warn('Chat missing required fields:', {
+      id: !!rawChat?.id,
+      title: !!rawChat?.title || `${rawChat?.category}-${rawChat?.id}`,
+      messages: !!rawChat?.messages,
+      category: !!rawChat?.category,
+    });
+  }
+
+  // Category validation (flexible)
+  const category = rawChat.category.toLowerCase();
+  const chatCategory = category === 'privacy' ? Category.Privacy : Category.Commercial;
+
+  // Messages validation
+  if (!Array.isArray(rawChat.messages) || rawChat.messages.length === 0) {
+    console.warn(`Chat ${rawChat.id} has invalid messages`);
+    return null;
+  }
+
+  // Transform messages with basic validation
+  const messages: SyntheticChatMessage[] = [];
+  for (const msg of rawChat.messages) {
+    const transformed = transformMessage(msg);
+    if (transformed) {
+      messages.push(transformed);
+    }
+  }
+
+  if (messages.length === 0) {
+    console.warn(`Chat ${rawChat.id} has no valid messages`);
+    return null;
+  }
+
+  return {
+    id: rawChat.id,
+    title: rawChat.title || `${rawChat?.category}-${rawChat?.id}`,
+    category: chatCategory,
+    messages,
+  };
+}
+
+/**
+ * Transform message with essential validation only
+ */
+function transformMessage(rawMessage: RawChatMessage): SyntheticChatMessage | null {
+  // Essential checks
+  if (!rawMessage?.role || !rawMessage?.content) {
+    return null;
+  }
+
+  // Role validation (flexible)
+  const role = rawMessage.role.toLowerCase();
+  if (role !== 'user' && role !== 'assistant') {
+    return null;
+  }
+
+  return {
+    role: role === 'user' ? ChatRole.User : ChatRole.Assistant,
+    content: rawMessage.content.trim(),
+    timestamp: rawMessage.timestamp || '',
+  };
+}
+
+/**
+ * Enhanced version with repair capabilities for production use
+ */
+export const cleanGeneratedResponseContentWithRepair = (content: ContentBlock): SyntheticChat[] => {
+  console.log('\n=== CLEANING WITH REPAIR CAPABILITIES ===');
+
+  // First try the simple approach
+  const simpleResult = cleanGeneratedResponseContent(content);
+  if (simpleResult.length > 0) {
+    return simpleResult;
+  }
+
+  // If that fails, try repair strategies
+  console.log('Simple cleaning failed, attempting repair...');
+
+  if (!content || content.type !== 'text' || !content.text) {
+    throw new Error('Unexpected content');
+  }
+
+  try {
+    if (!content?.text) return [];
+
+    let jsonText = content.text.trim();
+
+    // Remove code blocks
+    const codeBlockMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    if (codeBlockMatch) {
+      jsonText = codeBlockMatch[1].trim();
+    }
+
+    // Attempt to repair truncated JSON
+    const repairedJson = attemptJsonRepair(jsonText);
+    if (repairedJson) {
+      console.log('✅ Successfully repaired truncated JSON');
+
+      try {
+        const rawChats = JSON.parse(repairedJson);
+        if (Array.isArray(rawChats)) {
+          const cleanedChats: SyntheticChat[] = [];
+          for (const rawChat of rawChats) {
+            const cleaned = transformChat(rawChat);
+            if (cleaned) cleanedChats.push(cleaned);
+          }
+
+          console.log(`🔧 Repair recovered ${cleanedChats.length} chats`);
+          return cleanedChats;
+        }
+      } catch (e) {
+        console.error('Repaired JSON still invalid:', e);
+      }
+    }
+  } catch (error) {
+    console.error('Repair attempt failed:', error);
+  }
+
+  return [];
+};
+
+/**
+ * Attempt to repair truncated JSON by finding complete objects
+ */
+function attemptJsonRepair(jsonText: string): string | null {
+  // Look for complete chat objects
+  const chatPattern = /\{\s*"id":\s*"[^"]+"/g;
+  const matches = Array.from(jsonText.matchAll(chatPattern));
+
+  if (matches.length === 0) return null;
+
+  // Find the last complete object
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const match = matches[i];
+    if (!match.index) continue;
+
+    // Try to find the end of this object
+    let braceCount = 0;
     let endPos = -1;
 
-    for (let i = 0; i < jsonContent.length; i++) {
-      const char = jsonContent[i];
-      if (char === '[') bracketCount++;
-      else if (char === ']') {
-        bracketCount--;
-        if (bracketCount === 0) {
-          endPos = i + 1;
+    for (let j = match.index; j < jsonText.length; j++) {
+      const char = jsonText[j];
+      if (char === '{') braceCount++;
+      else if (char === '}') {
+        braceCount--;
+        if (braceCount === 0) {
+          endPos = j + 1;
           break;
         }
       }
     }
 
     if (endPos > 0) {
-      jsonContent = jsonContent.substring(0, endPos);
-      console.log('✅ Found complete JSON array, length:', jsonContent.length);
-      return jsonContent;
-    } else {
-      console.log('⚠️ Found array start but no clean end, using full content');
-      return jsonContent;
-    }
-  }
+      // Extract complete objects and close array
+      const completeSection = jsonText.substring(0, endPos);
+      const repairedJson = completeSection + '\n]';
 
-  // Strategy 3: Aggressive cleaning - remove markdown formatting
-  let cleaned = text.trim();
-  console.log('📝 Applying aggressive cleaning...');
-
-  // Remove various markdown code block patterns
-  cleaned = cleaned.replace(/^```json\s*/i, '');
-  cleaned = cleaned.replace(/^```\s*/, '');
-  cleaned = cleaned.replace(/\s*```$/, '');
-  cleaned = cleaned.replace(/^`+/, '');
-  cleaned = cleaned.replace(/`+$/, '');
-
-  // Remove any leading/trailing whitespace or newlines
-  cleaned = cleaned.trim();
-
-  // If it starts with a backslash, try to remove escaped characters
-  if (cleaned.startsWith('\\')) {
-    console.log('⚠️ Content starts with backslash, attempting to unescape...');
-    // Try to unescape common patterns
-    cleaned = cleaned.replace(/\\"/g, '"');
-    cleaned = cleaned.replace(/\\n/g, '\n');
-    cleaned = cleaned.replace(/\\t/g, '\t');
-    cleaned = cleaned.replace(/\\r/g, '\r');
-    cleaned = cleaned.replace(/\\\\/g, '\\');
-
-    // If it still starts with backslash, remove leading backslashes
-    cleaned = cleaned.replace(/^\\+/, '');
-  }
-
-  console.log('Cleaned length:', cleaned.length);
-  console.log('Cleaned starts with:', JSON.stringify(cleaned.slice(0, 50)));
-  console.log('Cleaned ends with:', JSON.stringify(cleaned.slice(-50)));
-
-  return cleaned;
-};
-
-// Complete incomplete JSON by finding the last valid structure
-const completeJson = (jsonString: string): string => {
-  console.log('=== COMPLETING JSON ===');
-  console.log('Input length:', jsonString.length);
-  console.log('Input starts with:', JSON.stringify(jsonString.slice(0, 100)));
-
-  const completed = jsonString.trim();
-
-  // Quick validation - make sure it looks like JSON
-  if (!completed.startsWith('[') && !completed.startsWith('{')) {
-    console.log('❌ Content does not start with [ or {');
-    throw new Error('Content does not appear to be JSON - starts with: ' + JSON.stringify(completed.slice(0, 20)));
-  }
-
-  // Count brackets and braces for basic structure validation
-  const openBraces = (completed.match(/{/g) || []).length;
-  const closeBraces = (completed.match(/}/g) || []).length;
-  const openBrackets = (completed.match(/\[/g) || []).length;
-  const closeBrackets = (completed.match(/\]/g) || []).length;
-
-  console.log('Bracket/brace counts:', { openBraces, closeBraces, openBrackets, closeBrackets });
-
-  const bracesDiff = openBraces - closeBraces;
-  const bracketsDiff = openBrackets - closeBrackets;
-
-  // Strategy 1: If reasonably balanced, try minimal completion
-  if (bracesDiff >= 0 && bracesDiff <= 5 && bracketsDiff >= 0 && bracketsDiff <= 2) {
-    console.log('📝 Attempting minimal completion...');
-    let minimal = completed;
-
-    // Remove any incomplete trailing content
-    const trimPatterns = [
-      /,\s*$/, // trailing comma
-      /:\s*$/, // incomplete key-value pair
-      /"\s*$/, // incomplete string at end (but not if it's a complete field)
-    ];
-
-    for (const pattern of trimPatterns) {
-      if (pattern.test(minimal)) {
-        console.log('Trimming pattern:', pattern);
-        minimal = minimal.replace(pattern, '');
+      // Quick validation
+      try {
+        JSON.parse(repairedJson);
+        return repairedJson;
+      } catch (error) {
+        console.log(error);
+        continue;
       }
     }
-
-    // Add missing closing braces and brackets
-    for (let i = 0; i < bracesDiff; i++) {
-      minimal += '\n  }';
-    }
-    for (let i = 0; i < bracketsDiff; i++) {
-      minimal += '\n]';
-    }
-
-    // Clean up formatting
-    minimal = minimal.replace(/,(\s*[}\]])/g, '$1');
-
-    try {
-      JSON.parse(minimal);
-      console.log('✅ Minimal completion succeeded');
-      return minimal;
-    } catch (error) {
-      console.log('❌ Minimal completion failed:', error);
-    }
   }
 
-  // Strategy 2: Find last complete chat object
-  console.log('📝 Looking for last complete chat object...');
-  const chatCompleteRegex = /"category":\s*"[^"]*"\s*}\s*(?:,\s*)?(?=\s*[\]\}]|$)/g;
-  let lastChatMatch;
-  let match;
-
-  while ((match = chatCompleteRegex.exec(completed)) !== null) {
-    lastChatMatch = match;
-  }
-
-  if (lastChatMatch) {
-    const cutPoint = lastChatMatch.index + lastChatMatch[0].length;
-    let truncated = completed.substring(0, cutPoint);
-
-    // Ensure proper closing
-    if (!truncated.trim().endsWith(']')) {
-      truncated += '\n]';
-    }
-
-    try {
-      JSON.parse(truncated);
-      console.log('✅ Chat object completion succeeded');
-      return truncated;
-    } catch (error) {
-      console.log('❌ Chat object completion failed:', error);
-    }
-  }
-
-  // Strategy 3: Find last complete message
-  console.log('📝 Looking for last complete message...');
-  const messageCompleteRegex = /"timestamp":\s*"[^"]*"\s*}/g;
-  let lastMessageMatch;
-
-  while ((match = messageCompleteRegex.exec(completed)) !== null) {
-    lastMessageMatch = match;
-  }
-
-  if (lastMessageMatch) {
-    const cutPoint = lastMessageMatch.index + lastMessageMatch[0].length;
-    let truncated = completed.substring(0, cutPoint);
-
-    // Complete the structure
-    if (!truncated.includes('    ]')) {
-      truncated += '\n    ]';
-    }
-    if (!truncated.includes('  },')) {
-      truncated += ',\n    "category": "privacy"\n  }';
-    }
-    if (!truncated.trim().endsWith(']')) {
-      truncated += '\n]';
-    }
-
-    // Clean formatting
-    truncated = truncated.replace(/,(\s*[}\]])/g, '$1');
-
-    try {
-      JSON.parse(truncated);
-      console.log('✅ Message completion succeeded');
-      return truncated;
-    } catch (error) {
-      console.log('❌ Message completion failed:', error);
-    }
-  }
-
-  // Strategy 4: Fallback - simple bracket balancing
-  console.log('📝 Fallback: simple bracket balancing...');
-  let fallback = completed;
-
-  for (let i = 0; i < Math.max(0, bracesDiff); i++) {
-    fallback += '\n  }';
-  }
-  for (let i = 0; i < Math.max(0, bracketsDiff); i++) {
-    fallback += '\n]';
-  }
-
-  fallback = fallback.replace(/,(\s*[}\]])/g, '$1');
-
-  console.log('Fallback result length:', fallback.length);
-  return fallback;
-};
-
-// Check if JSON appears complete
-const isJsonComplete = (jsonString: string): boolean => {
-  try {
-    const parsed = JSON.parse(jsonString);
-    console.log('✅ JSON is valid and complete');
-    return parsed;
-  } catch (error) {
-    console.log('❌ JSON is incomplete:', error);
-    return false;
-  }
-};
-
-// Main function with comprehensive error handling
-export const cleanGeneratedResponseContent = (content: ContentBlock) => {
-  console.log('\n=== STARTING JSON CLEANING PROCESS ===');
-
-  if (content.type !== 'text') {
-    throw new Error(`Unexpected content type: ${content.type}`);
-  }
-
-  console.log('Raw content length:', content.text.length);
-
-  try {
-    // Step 1: Extract JSON from markdown
-    const extractedJson = extractJsonFromMarkdown(content.text);
-
-    if (!extractedJson) {
-      throw new Error('No JSON content could be extracted from the response');
-    }
-
-    // Step 2: Check if already complete
-    if (isJsonComplete(extractedJson)) {
-      const parsed = JSON.parse(extractedJson);
-      console.log('✅ JSON was already complete, parsed successfully');
-      console.log('Result type:', Array.isArray(parsed) ? `array with ${parsed.length} items` : typeof parsed);
-      return parsed;
-    }
-
-    // Step 3: Attempt completion
-    console.log('\n=== ATTEMPTING JSON COMPLETION ===');
-    const completedJson = completeJson(extractedJson);
-
-    const parsed = JSON.parse(completedJson);
-    console.log('✅ JSON completion successful');
-    console.log('Result type:', Array.isArray(parsed) ? `array with ${parsed.length} items` : typeof parsed);
-    return parsed;
-  } catch (error) {
-    console.log('\n=== CLEANUP FAILED ===');
-    console.log('Error:', error);
-    console.log('Raw content sample (first 500 chars):');
-    console.log(JSON.stringify(content.text.slice(0, 500)));
-    console.log('\nRaw content sample (last 500 chars):');
-    console.log(JSON.stringify(content.text.slice(-500)));
-
-    throw new Error(`JSON cleanup failed: ${error}`);
-  }
-};
+  return null;
+}

@@ -1,0 +1,3 @@
+import { generateChats } from './';
+
+generateChats();

@@ -16,13 +16,7 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import { useTheme } from '@mui/material/styles';
 
-const navItems = [
-  { text: 'Deploy Now', href: 'https://vercel.com/new' },
-  { text: 'Docs', href: 'https://nextjs.org/docs' },
-  { text: 'Learn', href: 'https://nextjs.org/learn' },
-  { text: 'Examples', href: 'https://vercel.com/templates' },
-  { text: 'Next.js', href: 'https://nextjs.org' },
-];
+const navItems = [{ text: 'Github', href: 'https://github.com/khumbon/ai-driven-synthetic-chat' }];
 
 export const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);

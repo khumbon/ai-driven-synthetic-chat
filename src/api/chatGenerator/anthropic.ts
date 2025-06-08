@@ -21,7 +21,7 @@ export const createAnthropicMessage = ({ prompt, maxTokens }: { prompt: string; 
 
   return anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
-    max_tokens: maxTokens || 10000,
+    max_tokens: maxTokens || 20000,
     messages: [{ role: 'user', content: prompt }],
   });
 };

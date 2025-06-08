@@ -14,13 +14,16 @@ import {
   Stack,
   ThemeProvider,
   CssBaseline,
+  Backdrop,
 } from '@mui/material';
 import { Download, Mail, TrendingUp, Schedule, QuestionAnswer, Description, CheckCircle } from '@mui/icons-material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Lottie from 'lottie-react';
 import { EmailInput } from '@/components/EmailInput';
 import { LegalInsightsEmail } from '@/components';
 import { useGenerateChats, useGenerateReport } from '@/data/hooks';
 import { theme } from '@/styles/theme';
+import robotTypingAnimation from '@/assets/robotTypingAnimation.json';
 
 // Mock data
 /*const reportData: ReportData = {
@@ -72,7 +75,6 @@ import { theme } from '@/styles/theme';
 // Main Home Component
 const Home: React.FC = () => {
   const [emailGenerated, setEmailGenerated] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [emails, setEmails] = useState<string[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [emailsSent, setEmailsSent] = useState(false);
@@ -81,23 +83,21 @@ const Home: React.FC = () => {
   const {
     mutate: mutateGenerateReport,
     data: reportData,
-    isPending: reportPending,
+    isPending: isReportPending,
     isError: isReportError,
     error: reportError,
   } = useGenerateReport();
 
-  console.log('reportPending');
-  console.log(reportPending);
+  console.log('isReportPending');
+  console.log(isReportPending);
   const handleGenerateChats = () => {
     mutateGenerateChats();
   };
 
   const handleGenerateEmail = async () => {
     mutateGenerateReport();
-    setIsGenerating(true);
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setEmailGenerated(true);
-    setIsGenerating(false);
   };
 
   const handleSendEmails = async () => {
@@ -242,18 +242,18 @@ const Home: React.FC = () => {
                     <Button
                       variant="contained"
                       onClick={handleGenerateChats}
-                      disabled={isGenerating}
-                      startIcon={isGenerating ? <CircularProgress size={20} /> : <Mail />}
+                      disabled={isReportPending}
+                      startIcon={isReportPending ? <CircularProgress size={20} /> : <Mail />}
                     >
-                      {isGenerating ? 'Generating chats...' : 'Generate Chats'}
+                      {isReportPending ? 'Generating chats...' : 'Generate Chats'}
                     </Button>
                     <Button
                       variant="contained"
                       onClick={handleGenerateEmail}
-                      disabled={isGenerating}
-                      startIcon={isGenerating ? <CircularProgress size={20} /> : <Mail />}
+                      disabled={isReportPending}
+                      startIcon={isReportPending ? <CircularProgress size={20} /> : <Mail />}
                     >
-                      {isGenerating ? 'Generating email...' : 'Generate Email'}
+                      {isReportPending ? 'Generating email...' : 'Generate Email'}
                     </Button>
 
                     {emailGenerated && (
@@ -265,8 +265,8 @@ const Home: React.FC = () => {
                 </Box>
 
                 {/* Loading State */}
-                {isGenerating ||
-                  (reportPending && (
+                {isReportPending ||
+                  (isReportPending && (
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 8 }}>
                       <CircularProgress sx={{ mr: 2 }} />
                       <Typography variant="body2" color="text.secondary">
@@ -276,7 +276,7 @@ const Home: React.FC = () => {
                   ))}
 
                 {/* Email Preview */}
-                {(emailGenerated || !isGenerating) && reportData && (
+                {(emailGenerated || !isReportPending) && reportData && (
                   <Box id="email-preview">
                     <LegalInsightsEmail data={reportData} />
                   </Box>
@@ -405,6 +405,34 @@ const Home: React.FC = () => {
             </Grid>
           )}
         </Container>
+
+        {/* Lottie Animation Overlay */}
+        <Backdrop
+          sx={{
+            color: '#fff',
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+          }}
+          open={isReportPending}
+        >
+          <Box sx={{ width: 300, height: 300 }}>
+            <Lottie
+              animationData={robotTypingAnimation}
+              loop={true}
+              autoplay={true}
+              style={{ width: '100%', height: '100%' }}
+            />
+          </Box>
+          <Typography variant="h6" sx={{ color: 'white', fontWeight: 'medium' }}>
+            Generating Legal Insights Report...
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+            Please wait while our AI analyzes the legal conversations
+          </Typography>
+        </Backdrop>
       </Box>
     </ThemeProvider>
   );

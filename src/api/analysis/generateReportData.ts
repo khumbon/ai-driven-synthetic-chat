@@ -8,8 +8,6 @@ import { loadChatDataFromDirectory } from './readGeneratedChatFiles';
 
 export const generateReportData = async () => {
   const chats = await generateChats();
-  console.log('chats');
-  console.log(chats);
 
   if (!chats) {
     return;

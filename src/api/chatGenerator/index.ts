@@ -23,5 +23,3 @@ export const generateChats = async () => {
     console.error('Error in main execution:', error);
   }
 };
-
-generateChats();

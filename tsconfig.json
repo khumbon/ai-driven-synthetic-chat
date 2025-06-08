@@ -31,8 +31,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/resources/exampleChats.js",
-    "src/api/chatGenerator/index.js",
-    "src/api/analysis/index.js"
-  ],
+    "src/api/chatGenerator/index.ts",
+    "src/api/analysis/index.ts"
+, "src/api/analysis/testGenerateReport.js"  ],
   "exclude": ["node_modules"]
 }
