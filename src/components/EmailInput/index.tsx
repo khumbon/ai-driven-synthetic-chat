@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -88,6 +88,7 @@ interface EmailInputProps {
 export const EmailInput: React.FC<EmailInputProps> = ({ emails, setEmails, onSendEmails, isSending }) => {
   const [duplicateMessage, setDuplicateMessage] = useState<string>('');
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [shouldSend, setShouldSend] = useState(false);
 
   const emailForm = useForm<EmailInputFormData>({
     resolver: zodResolver(emailInputSchema),
@@ -96,61 +97,61 @@ export const EmailInput: React.FC<EmailInputProps> = ({ emails, setEmails, onSen
     },
   });
 
-  const addEmails = (data: EmailInputFormData) => {
+  // Use effect to send emails after state updates
+  useEffect(() => {
+    if (shouldSend) {
+      setShouldSend(false);
+      onSendEmails();
+    }
+  }, [emails, shouldSend, onSendEmails]);
+
+  const handleSendEmails = () => {
+    // Get current input value
+    const currentInput = emailForm.getValues('emailInput');
+
     // Clear previous validation errors
     setValidationErrors([]);
 
-    // Validate and parse emails
-    const { validEmails, errors } = validateAndParseEmails(data.emailInput);
+    // If there's text in the input, validate and add those emails first
+    if (currentInput?.trim()) {
+      const { validEmails, errors } = validateAndParseEmails(currentInput);
 
-    // If there are validation errors, display them and return early
-    if (errors.length > 0) {
-      setValidationErrors(errors);
-      return;
-    }
+      // If there are validation errors, display them and return early
+      if (errors.length > 0) {
+        setValidationErrors(errors);
+        return;
+      }
 
-    // Filter out duplicates
-    const newEmails = validEmails.filter((email) => !emails.includes(email));
-    const duplicates = validEmails.filter((email) => emails.includes(email));
+      // Filter out duplicates
+      const newEmails = validEmails.filter((email) => !emails.includes(email));
+      const allEmails = [...emails, ...newEmails];
 
-    if (duplicates.length > 0 && newEmails.length === 0) {
-      setValidationErrors([`All emails already added: ${duplicates.join(', ')}`]);
-      return;
-    }
+      // Update emails list and clear input
+      setEmails(allEmails);
+      emailForm.reset();
 
-    // Add new emails
-    setEmails([...emails, ...newEmails]);
-    emailForm.reset();
+      // Show info about duplicates if any
+      const duplicates = validEmails.filter((email) => emails.includes(email));
+      if (duplicates.length > 0) {
+        setDuplicateMessage(
+          `Added ${newEmails.length} new email${newEmails.length !== 1 ? 's' : ''}, skipped ${duplicates.length} duplicate${duplicates.length !== 1 ? 's' : ''}`,
+        );
+        setTimeout(() => setDuplicateMessage(''), 3000);
+      }
 
-    // Show info about duplicates if any
-    if (duplicates.length > 0) {
-      setDuplicateMessage(
-        `Added ${newEmails.length} new email${newEmails.length !== 1 ? 's' : ''}, skipped ${duplicates.length} duplicate${duplicates.length !== 1 ? 's' : ''}`,
-      );
-      setTimeout(() => setDuplicateMessage(''), 3000);
+      // Set flag to send emails after state update
+      setShouldSend(true);
+    } else if (emails.length > 0) {
+      // If no new input but there are existing emails, just send
+      onSendEmails();
     } else {
-      setDuplicateMessage('');
+      // No emails at all
+      setValidationErrors(['Please enter at least one email address']);
     }
   };
 
   const removeEmail = (emailToRemove: string) => {
     setEmails(emails.filter((email) => email !== emailToRemove));
-  };
-
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const isValid = await emailForm.trigger('emailInput');
-    if (isValid) {
-      const data = emailForm.getValues();
-      addEmails(data);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleFormSubmit(e);
-    }
   };
 
   // Clear validation errors when user starts typing
@@ -169,7 +170,7 @@ export const EmailInput: React.FC<EmailInputProps> = ({ emails, setEmails, onSen
           Add Email Recipients
         </Typography>
 
-        <Box component="form" onSubmit={emailForm.handleSubmit(addEmails)}>
+        <Box>
           <Controller
             name="emailInput"
             control={emailForm.control}
@@ -192,7 +193,6 @@ export const EmailInput: React.FC<EmailInputProps> = ({ emails, setEmails, onSen
                     : 'You can enter a single email or multiple emails separated by commas')
                 }
                 size="small"
-                onKeyPress={handleKeyPress}
                 sx={{ mb: 2 }}
               />
             )}
@@ -211,20 +211,6 @@ export const EmailInput: React.FC<EmailInputProps> = ({ emails, setEmails, onSen
               ))}
             </Alert>
           )}
-
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={emailForm.formState.isSubmitting || !emailForm.watch('emailInput')?.trim()}
-            fullWidth
-            onClick={onSendEmails}
-            startIcon={isSending ? <CircularProgress size={16} /> : <Send />}
-          >
-            {isSending
-              ? `Sending to ${emails.length} recipient${emailForm.watch('emailInput')?.includes(',') ? 's' : ''}}...`
-              : `Send Email to ${emails.length} recipient${emailForm.watch('emailInput')?.includes(',') ? 's' : ''}`}
-          </Button>
         </Box>
       </Box>
 
@@ -250,6 +236,50 @@ export const EmailInput: React.FC<EmailInputProps> = ({ emails, setEmails, onSen
           </Box>
         </Box>
       )}
+
+      {/* Send Emails Button */}
+      <Button
+        variant="contained"
+        color="primary"
+        disabled={isSending || (!emailForm.watch('emailInput')?.trim() && emails.length === 0)}
+        fullWidth
+        onClick={handleSendEmails}
+        startIcon={isSending ? <CircularProgress size={16} /> : <Send />}
+      >
+        {isSending
+          ? `Sending to ${
+              emails.length +
+              (emailForm
+                .watch('emailInput')
+                ?.split(',')
+                .filter((e) => e.trim()).length || 0)
+            } recipient${
+              emails.length +
+                (emailForm
+                  .watch('emailInput')
+                  ?.split(',')
+                  .filter((e) => e.trim()).length || 0) >
+              1
+                ? 's'
+                : ''
+            }...`
+          : `Send Email to ${
+              emails.length +
+              (emailForm
+                .watch('emailInput')
+                ?.split(',')
+                .filter((e) => e.trim()).length || 0)
+            } recipient${
+              emails.length +
+                (emailForm
+                  .watch('emailInput')
+                  ?.split(',')
+                  .filter((e) => e.trim()).length || 0) >
+              1
+                ? 's'
+                : ''
+            }`}
+      </Button>
 
       {/* Clear All Button */}
       {emails.length > 0 && (

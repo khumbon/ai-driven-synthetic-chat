@@ -40,8 +40,8 @@ import {
 } from 'recharts';
 import Lottie from 'lottie-react';
 import { EmailInput } from '@/components/EmailInput';
-import { LegalInsightsEmail } from '@/components';
-import { useGenerateChats, useGenerateReport } from '@/data/hooks';
+import { LegalInsightsEmailPreview } from '@/components';
+import { useGenerateChats, useGenerateReport, useSendEmails } from '@/data/hooks';
 import { theme } from '@/styles/theme';
 import robotTypingAnimation from '@/assets/robotTypingAnimation.json';
 
@@ -62,8 +62,6 @@ const CHART_COLORS = [
 // Main Home Component
 const Home = () => {
   const [emails, setEmails] = useState<string[]>([]);
-  const [isSending, setIsSending] = useState(false);
-  const [emailsSent, setEmailsSent] = useState(false);
 
   const { mutate: mutateGenerateChats } = useGenerateChats();
   const {
@@ -73,6 +71,17 @@ const Home = () => {
     isError: isReportError,
     error: reportError,
   } = useGenerateReport();
+  const {
+    mutate: mutateSendEmails,
+    data: sendEmailsData,
+    isPending: isSending,
+    error: sendEmailsError,
+  } = useSendEmails();
+  console.log('sendEmailsData');
+  console.log(sendEmailsData);
+
+  console.log('sendEmailsError');
+  console.log(sendEmailsError);
 
   if (reportError) {
     console.log('reportError', reportError);
@@ -87,12 +96,9 @@ const Home = () => {
   };
 
   const handleSendEmails = async () => {
-    setIsSending(true);
-    setEmailsSent(false);
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    setIsSending(false);
-    setEmailsSent(true);
-    setTimeout(() => setEmailsSent(false), 5000);
+    if (reportData) {
+      mutateSendEmails({ emails, reportData });
+    }
   };
 
   const handleDownloadEmail = () => {
@@ -241,7 +247,7 @@ const Home = () => {
               <Paper elevation={2} sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                   <Typography variant="h5" fontWeight="bold">
-                    Email Report Preview
+                    Report Preview
                   </Typography>
                   <Stack direction="row" spacing={2}>
                     <Button
@@ -282,7 +288,7 @@ const Home = () => {
                 {/* Email Preview */}
                 {!isReportPending && reportData && !isReportError && (
                   <Box id="email-preview">
-                    <LegalInsightsEmail data={reportData} />
+                    <LegalInsightsEmailPreview reportData={reportData} />
                   </Box>
                 )}
 
@@ -329,7 +335,7 @@ const Home = () => {
                 )}
 
                 {/* Success Message */}
-                {emailsSent && (
+                {sendEmailsData && (
                   <Alert severity="success" sx={{ mt: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <CheckCircle />
