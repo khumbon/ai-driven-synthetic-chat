@@ -1,19 +1,4 @@
-import { SyntheticChat } from '../types';
-
-interface ConversationStats {
-  title: string;
-  messageCount: number;
-  userQuestions: number;
-}
-
-interface Statistics {
-  totalMessages: number;
-  totalUserQuestions: number;
-  avgMessagesPerChat: string;
-  avgUserQuestionsPerChat: string;
-  longestConversation: ConversationStats;
-  mostQuestionsConversation: ConversationStats;
-}
+import { ConversationStats, Statistics, SyntheticChat } from '../types';
 
 // Statistics calculation functions
 export const calculateConversationStats = (chats: SyntheticChat[]): ConversationStats[] => {

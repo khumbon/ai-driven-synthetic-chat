@@ -1,3 +1,5 @@
+import { LAWYER_TASK_DURATIONS } from './analysis/calculateTimeSavings';
+
 export interface Message {
   id: string;
   creatorId: number;
@@ -146,6 +148,73 @@ export interface ReportSummary {
   avgQuestionsPerChat: string;
 }
 
+export interface TimeAnalysis {
+  question: string;
+  taskType: keyof typeof LAWYER_TASK_DURATIONS;
+  confidence: number;
+  assistantResponseTime: number; // in minutes
+  typicalLawyerTime: number; // in minutes
+  timeSaved: number; // in minutes
+  percentageSaved: number; // 0-100
+}
+
+export interface TimeSavingsReport {
+  totalQuestions: number;
+  totalTimeSaved: number; // in minutes
+  totalTimeSavedHours: number;
+  averageResponseTime: number; // in minutes
+  averageLawyerTime: number; // in minutes
+  taskBreakdown: Record<
+    keyof typeof LAWYER_TASK_DURATIONS,
+    {
+      count: number;
+      totalTimeSaved: number;
+      avgResponseTime: number;
+    }
+  >;
+  analyses: TimeAnalysis[];
+}
+
+export interface PrivacyTopics {
+  'GDPR & International Compliance': number;
+  'AI & Privacy': number;
+  'Data Breaches & Incident Response': number;
+  'Employee Monitoring': number;
+  'Data Sharing & Transfers': number;
+  'Consent & Cookies': number;
+  'Cross-Border Data Transfers': number;
+  'Automated Decision-Making': number;
+  'Vendor Due Diligence': number;
+  'Records of Processing (Article 30)': number;
+}
+
+export interface CommercialTopics {
+  'Contract Risk & Liability': number;
+  'Vendor Relationship Management': number;
+  'Intellectual Property & Licensing': number;
+  'Service Performance & SLAs': number;
+  'Payment & Financial Terms': number;
+  'Software Escrow & Data Portability': number;
+  'Termination & Exit Rights': number;
+  'Security & Compliance Requirements': number;
+  'Indemnification & Insurance': number;
+  'Force Majeure & Business Continuity': number;
+}
+
+export interface ConversationStats {
+  title: string;
+  messageCount: number;
+  userQuestions: number;
+}
+
+export interface Statistics {
+  totalMessages: number;
+  totalUserQuestions: number;
+  avgMessagesPerChat: string;
+  avgUserQuestionsPerChat: string;
+  longestConversation: ConversationStats;
+  mostQuestionsConversation: ConversationStats;
+}
 export interface ReportData {
   summary: {
     totalConversations: number;
@@ -153,11 +222,14 @@ export interface ReportData {
     avgMessagesPerChat: string; // could also be number if parsed
     avgQuestionsPerChat: string;
   };
-  privacyTopics: Record<string, number>;
-  commercialContractTopics: Record<string, number>;
+  privacyTopics: PrivacyTopics;
+  commercialContractTopics: CommercialTopics;
   patterns: {
     pattern: string;
     count: number;
   }[];
   mostCommonTerms: [string, number][];
+  timeSaved: TimeSavingsReport;
+  costSaved: string;
+  statistics: Statistics;
 }

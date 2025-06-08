@@ -1,12 +1,14 @@
 import { generateChats } from '../chatGenerator';
-import { ReportSummary } from '../types';
+import { ReportData, ReportSummary } from '../types';
 import { calculateMessageStatistics } from './calculateMessageStatistics';
 import { categorizeCommercialTopics, categorizePrivacyTopics } from './categoriseTitles';
 import { extractUserQuestions } from './extractUserQuestions';
 import { analyseQuestionPatterns } from './patternAnalysis';
 import { loadChatDataFromDirectory } from './readGeneratedChatFiles';
+import { calculateTimeSavings } from './calculateTimeSavings';
+import { calculateCostSavings } from './calculateCostSavings';
 
-export const generateReportData = async () => {
+export const generateReportData = async (): Promise<ReportData | undefined> => {
   const chats = await generateChats();
 
   if (!chats) {
@@ -25,6 +27,10 @@ export const generateReportData = async () => {
 
   const statistics = calculateMessageStatistics(allChats);
 
+  const timeSaved = calculateTimeSavings(allChats);
+
+  const costSaved = calculateCostSavings(timeSaved.totalTimeSavedHours);
+
   const summary: ReportSummary = {
     totalConversations: allChats.length,
     totalUserQuestions: patterns.totalQuestions,
@@ -35,6 +41,8 @@ export const generateReportData = async () => {
   console.log('privacyTopics', privacyTopics);
   console.log('commercialContractTopics', commercialContractTopics);
   console.log('patterns', patterns);
+  console.log('totalTimeSaved', timeSaved.totalTimeSavedHours);
+
   return {
     summary,
     privacyTopics,
@@ -42,15 +50,17 @@ export const generateReportData = async () => {
     patterns: patterns.patterns,
     statistics,
     mostCommonTerms: patterns.mostCommonTerms,
+    timeSaved,
+    costSaved,
   };
 };
 
-export const generateReportDataFromDirectory = () => {
+export const generateReportDataFromDirectory = (): ReportData | undefined => {
   const directoryPath = 'C:/Users/khumb/OneDrive/Documents/dev/ai-driven-synthetic-chat/output';
   const loadedChats = loadChatDataFromDirectory(directoryPath);
   if (!loadedChats) {
     console.log('No synthetic chat data');
-    return null;
+    return;
   }
 
   const { privacyChats, commercialContractChats, allChats } = loadedChats;
@@ -64,6 +74,10 @@ export const generateReportDataFromDirectory = () => {
 
   const statistics = calculateMessageStatistics(allChats);
 
+  const timeSaved = calculateTimeSavings(allChats);
+
+  const costSaved = calculateCostSavings(timeSaved.totalTimeSavedHours);
+
   const summary: ReportSummary = {
     totalConversations: allChats.length,
     totalUserQuestions: patterns.totalQuestions,
@@ -74,6 +88,7 @@ export const generateReportDataFromDirectory = () => {
   console.log('privacyTopics', privacyTopics);
   console.log('commercialContractTopics', commercialContractTopics);
   console.log('patterns', patterns);
+  console.log('totalTimeSaved', timeSaved.totalTimeSavedHours);
   return {
     summary,
     privacyTopics,
@@ -81,5 +96,7 @@ export const generateReportDataFromDirectory = () => {
     patterns: patterns.patterns,
     statistics,
     mostCommonTerms: patterns.mostCommonTerms,
+    timeSaved,
+    costSaved,
   };
 };

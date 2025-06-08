@@ -16,8 +16,28 @@ import {
   CssBaseline,
   Backdrop,
 } from '@mui/material';
-import { Download, Mail, TrendingUp, Schedule, QuestionAnswer, Description, CheckCircle } from '@mui/icons-material';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  Download,
+  Mail,
+  TrendingUp,
+  Schedule,
+  QuestionAnswer,
+  Description,
+  CheckCircle,
+  Timer,
+} from '@mui/icons-material';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 import Lottie from 'lottie-react';
 import { EmailInput } from '@/components/EmailInput';
 import { LegalInsightsEmail } from '@/components';
@@ -25,56 +45,22 @@ import { useGenerateChats, useGenerateReport } from '@/data/hooks';
 import { theme } from '@/styles/theme';
 import robotTypingAnimation from '@/assets/robotTypingAnimation.json';
 
-// Mock data
-/*const reportData: ReportData = {
-  summary: {
-    totalConversations: 18,
-    totalUserQuestions: 41,
-    avgMessagesPerChat: '4.3',
-    avgQuestionsPerChat: '2.3',
-  },
-  privacyTopics: {
-    'GDPR & International Compliance': 3,
-    'AI & Privacy': 3,
-    'Data Breaches & Incident Response': 1,
-    'Employee Monitoring': 1,
-    'Data Sharing & Transfers': 1,
-    'Consent & Cookies': 1,
-  },
-  commercialContractTopics: {
-    'Contract Risk & Liability': 3,
-    'Vendor Relationship Management': 4,
-    'Intellectual Property & Licensing': 2,
-    'Service Performance & SLAs': 1,
-    'Payment & Financial Terms': 1,
-  },
-  patterns: [
-    { pattern: 'Do I need to...', count: 12 },
-    { pattern: 'How should I modify/draft...', count: 10 },
-    { pattern: 'Please draft...', count: 7 },
-    { pattern: "What's reasonable/fair...", count: 5 },
-    { pattern: 'What should I include/negotiate...', count: 3 },
-    { pattern: 'What are the requirements for...', count: 3 },
-    { pattern: 'Can I/we...', count: 3 },
-    { pattern: 'What happens if...', count: 2 },
-  ],
-  mostCommonTerms: [
-    ['data', 12],
-    ['vendor', 11],
-    ['ai', 11],
-    ['consent', 7],
-    ['privacy', 6],
-    ['contract', 5],
-    ['liability', 5],
-    ['clause', 5],
-    ['agreement', 4],
-    ['employee', 4],
-  ],
-};*/
+// Colors for the task breakdown chart
+const CHART_COLORS = [
+  '#3B82F6',
+  '#10B981',
+  '#F59E0B',
+  '#EF4444',
+  '#8B5CF6',
+  '#06B6D4',
+  '#84CC16',
+  '#F97316',
+  '#EC4899',
+  '#6366F1',
+];
 
 // Main Home Component
-const Home: React.FC = () => {
-  const [emailGenerated, setEmailGenerated] = useState(false);
+const Home = () => {
   const [emails, setEmails] = useState<string[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [emailsSent, setEmailsSent] = useState(false);
@@ -88,16 +74,16 @@ const Home: React.FC = () => {
     error: reportError,
   } = useGenerateReport();
 
-  console.log('isReportPending');
-  console.log(isReportPending);
+  if (reportError) {
+    console.log('reportError', reportError);
+  }
+
   const handleGenerateChats = () => {
     mutateGenerateChats();
   };
 
   const handleGenerateEmail = async () => {
     mutateGenerateReport();
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setEmailGenerated(true);
   };
 
   const handleSendEmails = async () => {
@@ -136,6 +122,21 @@ const Home: React.FC = () => {
     a.download = 'legal-insights-report.html';
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  // Prepare task breakdown data for pie chart
+  const getTaskBreakdownData = () => {
+    if (!reportData?.timeSaved.taskBreakdown) return [];
+
+    return Object.entries(reportData.timeSaved.taskBreakdown)
+      .filter(([, data]) => data.count > 0)
+      .map(([taskType, data]) => ({
+        name: taskType,
+        value: data.count,
+        timeSaved: (data.totalTimeSaved / 60).toFixed(1), // Convert to hours
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 8); // Top 8 task types
   };
 
   return (
@@ -201,7 +202,11 @@ const Home: React.FC = () => {
                           Time Saved
                         </Typography>
                         <Typography variant="h4" fontWeight="bold" sx={{ color: '#9333ea' }}>
-                          10.3h
+                          {reportData.timeSaved?.totalTimeSavedHours
+                            ? `${reportData.timeSaved.totalTimeSavedHours.toFixed(1)}h`
+                            : reportData.timeSaved.totalTimeSaved
+                              ? `${reportData.timeSaved.totalTimeSaved.toFixed(1)}h`
+                              : '--'}
                         </Typography>
                       </Box>
                       <Schedule sx={{ color: '#9333ea', fontSize: 40 }} />
@@ -219,7 +224,7 @@ const Home: React.FC = () => {
                           Cost Savings
                         </Typography>
                         <Typography variant="h4" fontWeight="bold" sx={{ color: '#ea580c' }}>
-                          $3,090
+                          {reportData.costSaved ?? '--'}
                         </Typography>
                       </Box>
                       <TrendingUp sx={{ color: '#ea580c', fontSize: 40 }} />
@@ -256,7 +261,7 @@ const Home: React.FC = () => {
                       {isReportPending ? 'Generating email...' : 'Generate Email'}
                     </Button>
 
-                    {emailGenerated && (
+                    {reportData && (
                       <Button variant="outlined" onClick={handleDownloadEmail} startIcon={<Download />}>
                         Download HTML
                       </Button>
@@ -265,28 +270,35 @@ const Home: React.FC = () => {
                 </Box>
 
                 {/* Loading State */}
-                {isReportPending ||
-                  (isReportPending && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 8 }}>
-                      <CircularProgress sx={{ mr: 2 }} />
-                      <Typography variant="body2" color="text.secondary">
-                        Generating email report...
-                      </Typography>
-                    </Box>
-                  ))}
+                {isReportPending && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 8 }}>
+                    <CircularProgress sx={{ mr: 2 }} />
+                    <Typography variant="body2" color="text.secondary">
+                      Generating email report...
+                    </Typography>
+                  </Box>
+                )}
 
                 {/* Email Preview */}
-                {(emailGenerated || !isReportPending) && reportData && (
+                {!isReportPending && reportData && !isReportError && (
                   <Box id="email-preview">
                     <LegalInsightsEmail data={reportData} />
                   </Box>
                 )}
 
-                {emailGenerated && (
+                {reportData && (
                   <Alert severity="success" sx={{ mt: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <CheckCircle />
                       Email report generated successfully! You can now download it or send it to recipients.
+                    </Box>
+                  </Alert>
+                )}
+                {isReportError && (
+                  <Alert severity="error" sx={{ mt: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CheckCircle />
+                      Error generating email report. Try again.
                     </Box>
                   </Alert>
                 )}
@@ -300,7 +312,7 @@ const Home: React.FC = () => {
                   Send Email Report
                 </Typography>
 
-                {!emailGenerated ? (
+                {!reportData && !isReportError && !isReportPending ? (
                   <Box sx={{ textAlign: 'center', py: 6 }}>
                     <Mail sx={{ fontSize: 60, color: 'text.disabled', mb: 2 }} />
                     <Typography variant="body2" color="text.secondary">
@@ -331,7 +343,7 @@ const Home: React.FC = () => {
             </Grid>
           </Grid>
 
-          {/* Quick Charts */}
+          {/* Enhanced Charts Section */}
           {reportData && (
             <Grid container spacing={3} sx={{ mt: 3 }}>
               <Grid size={{ xs: 12, lg: 6 }}>
@@ -402,6 +414,129 @@ const Home: React.FC = () => {
                   </Stack>
                 </Paper>
               </Grid>
+
+              {/* Time Savings Analysis */}
+              {reportData.timeSaved && (
+                <>
+                  <Grid size={{ xs: 12, lg: 6 }}>
+                    <Paper elevation={2} sx={{ p: 3 }}>
+                      <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
+                        Task Type Distribution
+                      </Typography>
+                      <Box sx={{ width: '100%', height: 300 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={getTaskBreakdownData()}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                              outerRadius={80}
+                              fill="#8884d8"
+                              dataKey="value"
+                              fontSize={10}
+                            >
+                              {getTaskBreakdownData().map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip
+                              formatter={(value, name, props) => [
+                                `${value} questions`,
+                                `${props.payload.timeSaved}h saved`,
+                              ]}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </Box>
+                    </Paper>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, lg: 6 }}>
+                    <Paper elevation={2} sx={{ p: 3 }}>
+                      <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
+                        Time Efficiency Metrics
+                      </Typography>
+                      <Stack spacing={3}>
+                        <Box>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="body2" color="text.secondary">
+                              Average AI Response Time
+                            </Typography>
+                            <Typography variant="body2" fontWeight="medium">
+                              {reportData.timeSaved.averageResponseTime.toFixed(1)} min
+                            </Typography>
+                          </Box>
+                          <LinearProgress
+                            variant="determinate"
+                            value={10} // Low percentage since AI is fast
+                            sx={{
+                              height: 8,
+                              borderRadius: 4,
+                              backgroundColor: '#e5e7eb',
+                              '& .MuiLinearProgress-bar': {
+                                borderRadius: 4,
+                                backgroundColor: '#10B981',
+                              },
+                            }}
+                          />
+                        </Box>
+
+                        <Box>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="body2" color="text.secondary">
+                              Typical Lawyer Time
+                            </Typography>
+                            <Typography variant="body2" fontWeight="medium">
+                              {reportData.timeSaved.averageLawyerTime.toFixed(1)} min
+                            </Typography>
+                          </Box>
+                          <LinearProgress
+                            variant="determinate"
+                            value={100}
+                            sx={{
+                              height: 8,
+                              borderRadius: 4,
+                              backgroundColor: '#e5e7eb',
+                              '& .MuiLinearProgress-bar': {
+                                borderRadius: 4,
+                                backgroundColor: '#EF4444',
+                              },
+                            }}
+                          />
+                        </Box>
+
+                        <Box
+                          sx={{
+                            p: 2,
+                            bgcolor: 'primary.light',
+                            borderRadius: 2,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 2,
+                          }}
+                        >
+                          <Timer sx={{ color: 'primary.main' }} />
+                          <Box>
+                            <Typography variant="body2" fontWeight="bold" color="primary.main">
+                              Efficiency Gain
+                            </Typography>
+                            <Typography variant="caption" color="primary.dark">
+                              {(
+                                (1 -
+                                  reportData.timeSaved.averageResponseTime / reportData.timeSaved.averageLawyerTime) *
+                                100
+                              ).toFixed(1)}
+                              % faster than traditional legal research
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Stack>
+                    </Paper>
+                  </Grid>
+                </>
+              )}
             </Grid>
           )}
         </Container>
