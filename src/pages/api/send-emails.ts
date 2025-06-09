@@ -48,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const emailPromises = emails.map(async (email) => {
       try {
         const { data, error } = await resend.emails.send({
-          from: 'testEmail@mailosaur.com',
+          from: 'testEmail@roadtowealth7.com',
           to: email,
           subject: emailSubject,
           react: LegalInsightsEmail({ reportData }),
@@ -58,9 +58,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           console.error(`Failed to send email to ${email}:`, error);
           return { email, success: false, error: error.message };
         }
-
-        console.log('data');
-        console.log(data);
 
         return { email, success: true, messageId: data?.id };
       } catch (error) {
