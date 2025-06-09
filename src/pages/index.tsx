@@ -377,12 +377,23 @@ const Home = () => {
                 )}
 
                 {/* Success Message */}
-                {sendEmailsData && (
+                {sendEmailsData && sendEmailsData.successful && (
                   <Alert severity="success" sx={{ mt: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <CheckCircle />
                       <Typography variant="body2" fontWeight="medium">
                         Emails sent successfully to {emails.length} recipient{emails.length !== 1 ? 's' : ''}!
+                      </Typography>
+                    </Box>
+                  </Alert>
+                )}
+                {/* Failure Message */}
+                {sendEmailsData && !sendEmailsData.successful && (
+                  <Alert severity="error" sx={{ mt: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CheckCircle />
+                      <Typography variant="body2" fontWeight="medium">
+                        Emails failed to send to {emails.length} recipient{emails.length !== 1 ? 's' : ''}!
                       </Typography>
                     </Box>
                   </Alert>

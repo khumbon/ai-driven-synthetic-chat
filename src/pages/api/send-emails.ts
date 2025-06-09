@@ -10,11 +10,15 @@ interface SendEmailRequest {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log('req1');
+  console.log(req);
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
+    console.log('req');
+    console.log(req);
     const { emails, reportData, subject }: SendEmailRequest = req.body;
 
     // Validate request body

@@ -1,5 +1,4 @@
-import React, { useMemo } from 'react';
-import { Body, Container, Section, Row, Column, Heading, Text, Hr } from '@react-email/components';
+import { Body, Container, Section, Row, Column, Heading, Text, Hr, Html, Head } from '@react-email/components';
 import { ReportData, TimeSavingsReport } from '@/api/types';
 
 interface LegalInsightsEmailProps {
@@ -115,17 +114,10 @@ export const LegalInsightsEmail = ({ reportData }: LegalInsightsEmailProps) => {
 
   // Get calculated data
   const taskBreakdownData = getTaskBreakdownData({ timeSaved });
-  const topPrivacyTopics = useMemo(
-    () => getTopPrivacyTopics({ privacyTopics: reportData?.privacyTopics }),
-    [reportData?.privacyTopics],
-  );
-  const topCommercialTopics = useMemo(
-    () =>
-      getTopCommercialTopics({
-        commercialContractTopics: reportData?.commercialContractTopics,
-      }),
-    [reportData?.commercialContractTopics],
-  );
+  const topPrivacyTopics = getTopPrivacyTopics({ privacyTopics: reportData?.privacyTopics });
+  const topCommercialTopics = getTopCommercialTopics({
+    commercialContractTopics: reportData?.commercialContractTopics,
+  });
   const patterns = reportData.patterns || [];
   const mostCommonTerms = reportData.mostCommonTerms || [];
 
@@ -138,7 +130,8 @@ export const LegalInsightsEmail = ({ reportData }: LegalInsightsEmailProps) => {
   });
 
   return (
-    <>
+    <Html>
+      <Head />
       <Body style={main}>
         <Container style={container}>
           {/* Header */}
@@ -405,7 +398,7 @@ export const LegalInsightsEmail = ({ reportData }: LegalInsightsEmailProps) => {
           </Section>
         </Container>
       </Body>
-    </>
+    </Html>
   );
 };
 
