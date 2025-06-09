@@ -377,7 +377,7 @@ export async function generatePrivacyChats(count: number = 10): Promise<Syntheti
     totalCount: count, // number of synthetic chats to generate
     batchSize: count <= 4 ? count : 4, // Use smaller batches for larger requests
     delayMs: 1000, // 1 second delay between batches
-    maxRetries: 2,
+    maxRetries: 1,
     saveDebugFiles: false, // Disable debug files for normal use
   };
 
@@ -397,7 +397,7 @@ export async function generateCommercialChats(count: number = 10): Promise<Synth
     totalCount: count,
     batchSize: count <= 4 ? count : 4, // Use smaller batches for larger requests
     delayMs: 1000, // 1 second delay between batches
-    maxRetries: 2,
+    maxRetries: 1,
     saveDebugFiles: false, // Disable debug files for normal use
   };
 

@@ -19,13 +19,6 @@ export const LegalInsightsEmailPreview = ({ reportData }: { reportData: ReportDa
   console.log(reportData.patterns);
   const patternData = reportData.patterns.slice(0, 5);
 
-  const timeSavingsCalculation = {
-    avgTimePerQuestion: 15,
-    totalQuestions: reportData.summary.totalUserQuestions,
-    totalTimeSaved: (reportData.summary.totalUserQuestions * 15) / 60,
-    costSavingsPerHour: 300,
-  };
-
   return (
     <Paper
       elevation={3}
@@ -106,12 +99,11 @@ export const LegalInsightsEmailPreview = ({ reportData }: { reportData: ReportDa
         >
           <AlertTitle sx={{ fontWeight: 'bold', color: '#92400e' }}>⏱️ Time Savings Analysis</AlertTitle>
           <Box sx={{ fontSize: '0.875rem', lineHeight: 1.5, color: '#451a03' }}>
-            <strong>Estimated Time Saved:</strong> {timeSavingsCalculation.totalTimeSaved.toFixed(1)} hours
+            <strong>Estimated Time Saved:</strong> {reportData.timeSaved.totalTimeSavedHours.toFixed(1)} hours
             <br />
-            <strong>Cost Savings:</strong> $
-            {(timeSavingsCalculation.totalTimeSaved * timeSavingsCalculation.costSavingsPerHour).toLocaleString()}
+            <strong>Cost Savings:</strong> ${reportData.costSaved}
             <br />
-            <em>Based on {timeSavingsCalculation.avgTimePerQuestion} min average research time per question</em>
+            <em>Based on {reportData.timeSaved.averageResponseTime} min average research time per question</em>
           </Box>
         </Alert>
 
