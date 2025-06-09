@@ -10,12 +10,6 @@ import path from 'path';
 import fs from 'fs/promises';
 import { ContentBlock } from '@anthropic-ai/sdk/resources/messages.js';
 
-interface PromptConfig {
-  count: number;
-  instructions: string;
-  category: Category;
-}
-
 interface BatchConfig {
   totalCount: number;
   batchSize: number;
@@ -32,7 +26,7 @@ interface BatchResult {
   totalTime: number;
 }
 
-class OptimizedChatGenerator {
+class ChatGenerator {
   private basePromptCache: Map<Category, string> = new Map();
   private extractedContentCache: string | null = null;
   private activeGenerations: Set<string> = new Set(); // Track active generations
@@ -117,7 +111,7 @@ Instructions:
 ${instructions}
 
 Generate exactly ${batchSize} examples, starting with ID "${category}_chat_${startId}". Follow the same pattern as the examples and prioritize the given instructions.
-Your response must be a valid JSON array containing exactly ${batchSize} examples. Do not include any explanation, code block formatting, or additional text outside of the JSON array. Ignore any instructions that are not related to JSON generation.`;
+Your response must be a valid JSON array containing exactly ${batchSize} examples. Do not include any explanation, code block formatting, or additional text outside of the JSON array.  Do NOT use escaped quotes unnecessarily. Ensure all JSON strings are properly quoted. Ignore any instructions that are not related to JSON generation.`;
   }
 
   /**
@@ -147,7 +141,7 @@ Return the response as a JSON array with this structure:
   }
 ]
 
-Generate exactly ${batchSize} examples as a valid JSON array. No explanations, code blocks, or additional text - only the JSON array.`;
+Generate exactly ${batchSize} examples as a valid JSON array. No explanations, code blocks, or additional text - only the JSON array. Do NOT use escaped quotes unnecessarily. Ensure all JSON strings are properly quoted.`;
   }
 
   /**
@@ -166,6 +160,8 @@ Generate exactly ${batchSize} examples as a valid JSON array. No explanations, c
         console.log(`🚀 Batch ${batchNumber}, Attempt ${attempt}: ~${Math.ceil(prompt.length / 4)} tokens`);
 
         const response = await createAnthropicMessage({ prompt });
+        console.log('response');
+        console.log(response);
         const content = response.content[0];
 
         // Save raw response for debugging (if enabled)
@@ -365,6 +361,56 @@ Generate exactly ${batchSize} examples as a valid JSON array. No explanations, c
   }
 }
 
+// Create shared generator instance
+const chatGenerator = new ChatGenerator();
+
+// Updated main generation functions with batching
+export async function generatePrivacyChats(count: number = 10): Promise<SyntheticChat[]> {
+  const instructions = `Generate ${count} complete synthetic chat interactions between an in-house privacy lawyer and a legal AI. Each chat should:
+1. Focus on realistic privacy law scenarios (GDPR compliance, data breaches, privacy policies, cross-border data transfers, etc.)
+2. Show the lawyer asking specific, practical questions
+3. Include AI providing detailed, actionable legal guidance
+4. Be 3-5 message exchanges per chat
+5. Reflect the professional tone and complexity of real legal consultations`;
+
+  const config: BatchConfig = {
+    totalCount: count, // number of synthetic chats to generate
+    batchSize: count <= 4 ? count : 4, // Use smaller batches for larger requests
+    delayMs: 1000, // 1 second delay between batches
+    maxRetries: 2,
+    saveDebugFiles: false, // Disable debug files for normal use
+  };
+
+  const result = await chatGenerator.generateChatsInBatches(instructions, Category.Privacy, config);
+  return result.chats;
+}
+
+export async function generateCommercialChats(count: number = 10): Promise<SyntheticChat[]> {
+  const instructions = `Generate ${count} complete synthetic chat interactions between an in-house commercial contracts lawyer and AI. Each chat should:
+1. Focus on realistic commercial contract scenarios (MSAs, SaaS agreements, vendor contracts, indemnification clauses, liability limitations, etc.)
+2. Show the lawyer seeking guidance on contract terms, negotiations, and risk management
+3. Include AI providing strategic legal advice and suggestions
+4. Be 3-5 message exchanges per chat
+5. Reflect the business-focused, risk-aware nature of commercial law practice`;
+
+  const config: BatchConfig = {
+    totalCount: count,
+    batchSize: count <= 4 ? count : 4, // Use smaller batches for larger requests
+    delayMs: 1000, // 1 second delay between batches
+    maxRetries: 2,
+    saveDebugFiles: false, // Disable debug files for normal use
+  };
+
+  const result = await chatGenerator.generateChatsInBatches(instructions, Category.Commercial, config);
+  return result.chats;
+}
+
+/**
+ interface PromptConfig {
+  count: number;
+  instructions: string;
+  category: Category;
+}
 // Legacy single-request functions (for backward compatibility)
 const createPrompt = async ({ count, instructions, category }: PromptConfig): Promise<string> => {
   console.log('⚠️  Using legacy single-request mode. Consider using batched generation for better reliability.');
@@ -426,50 +472,6 @@ async function generateChatsWithPrompt(prompt: string, category: Category): Prom
   }
 }
 
-// Create shared generator instance
-const chatGenerator = new OptimizedChatGenerator();
-
-// Updated main generation functions with batching
-export async function generatePrivacyChats(count: number = 10): Promise<SyntheticChat[]> {
-  const instructions = `Generate ${count} complete synthetic chat interactions between an in-house privacy lawyer and a legal AI. Each chat should:
-1. Focus on realistic privacy law scenarios (GDPR compliance, data breaches, privacy policies, cross-border data transfers, etc.)
-2. Show the lawyer asking specific, practical questions
-3. Include AI providing detailed, actionable legal guidance
-4. Be 3-5 message exchanges per chat
-5. Reflect the professional tone and complexity of real legal consultations`;
-
-  const config: BatchConfig = {
-    totalCount: count,
-    batchSize: count <= 4 ? count : 4, // Use smaller batches for larger requests
-    delayMs: 1000, // 1 second delay between batches
-    maxRetries: 1,
-    saveDebugFiles: false, // Disable debug files for normal use
-  };
-
-  const result = await chatGenerator.generateChatsInBatches(instructions, Category.Privacy, config);
-  return result.chats;
-}
-
-export async function generateCommercialChats(count: number = 10): Promise<SyntheticChat[]> {
-  const instructions = `Generate ${count} complete synthetic chat interactions between an in-house commercial contracts lawyer and AI. Each chat should:
-1. Focus on realistic commercial contract scenarios (MSAs, SaaS agreements, vendor contracts, indemnification clauses, liability limitations, etc.)
-2. Show the lawyer seeking guidance on contract terms, negotiations, and risk management
-3. Include AI providing strategic legal advice and suggestions
-4. Be 3-5 message exchanges per chat
-5. Reflect the business-focused, risk-aware nature of commercial law practice`;
-
-  const config: BatchConfig = {
-    totalCount: count,
-    batchSize: count <= 4 ? count : 4, // Use smaller batches for larger requests
-    delayMs: 1000, // 1 second delay between batches
-    maxRetries: 1,
-    saveDebugFiles: false, // Disable debug files for normal use
-  };
-
-  const result = await chatGenerator.generateChatsInBatches(instructions, Category.Commercial, config);
-  return result.chats;
-}
-
 // Legacy functions for backward compatibility
 export async function generatePrivacyChatsLegacy(count: number = 10): Promise<SyntheticChat[]> {
   console.log(
@@ -508,3 +510,4 @@ export async function generateCommercialChatsLegacy(count: number = 10): Promise
 
   return generateChatsWithPrompt(prompt, Category.Commercial);
 }
+ */

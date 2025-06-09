@@ -14,22 +14,6 @@ export async function fetchChatData(url: string): Promise<(ChatData | NestedChat
   }
 }
 
-export async function fetchAllChatData(urls: string[]): Promise<CombinedChat[]> {
-  const allCombinedChats: CombinedChat[] = [];
-
-  for (const url of urls) {
-    const urlData = await fetchChatData(url);
-
-    // Combine chat and messages from this single URL's data
-    const combinedChat = combineUrlData(urlData);
-    if (combinedChat) {
-      allCombinedChats.push(combinedChat);
-    }
-  }
-
-  return allCombinedChats;
-}
-
 function extractFromNestedStructure(data: NestedChatData): ChatApiResponse | MessagesApiResponse | null {
   // Handle the nested array structure like [3,0,[[{"success":true,"messages":[...]}]]]
   if (Array.isArray(data.json) && data.json.length >= 3) {
@@ -48,6 +32,7 @@ function extractFromNestedStructure(data: NestedChatData): ChatApiResponse | Mes
   return null;
 }
 
+// assess structure of example data to combine chat and messages
 function combineUrlData(urlData: (ChatData | NestedChatData)[]): CombinedChat | null {
   let chatInfo: Chat | null = null;
   let messagesInfo: Message[] | null = null;
@@ -88,4 +73,20 @@ function combineUrlData(urlData: (ChatData | NestedChatData)[]): CombinedChat | 
 
   console.log('Missing data - chat:', !!chatInfo, 'messages:', !!messagesInfo);
   return null;
+}
+
+export async function fetchAllChatData(urls: string[]): Promise<CombinedChat[]> {
+  const allCombinedChats: CombinedChat[] = [];
+
+  for (const url of urls) {
+    const urlData = await fetchChatData(url);
+
+    // Combine chat and messages from this single URL's data
+    const combinedChat = combineUrlData(urlData);
+    if (combinedChat) {
+      allCombinedChats.push(combinedChat);
+    }
+  }
+
+  return allCombinedChats;
 }

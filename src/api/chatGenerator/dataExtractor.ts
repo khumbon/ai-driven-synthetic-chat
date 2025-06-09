@@ -1,5 +1,6 @@
 import { CombinedChat, ExtractedChat, ExtractedMessage } from '../types';
 
+// format example chat data into a usable format
 export function extractChatContent(combinedChats: CombinedChat[]): string {
   const extractedChats: ExtractedChat[] = combinedChats
     .map((combinedChat): ExtractedChat | null => {

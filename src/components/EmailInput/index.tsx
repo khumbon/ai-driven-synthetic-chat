@@ -136,7 +136,7 @@ export const EmailInput: React.FC<EmailInputProps> = ({ emails, setEmails, onSen
         setDuplicateMessage(
           `Added ${newEmails.length} new email${newEmails.length !== 1 ? 's' : ''}, skipped ${duplicates.length} duplicate${duplicates.length !== 1 ? 's' : ''}`,
         );
-        setTimeout(() => setDuplicateMessage(''), 3000);
+        setTimeout(() => setDuplicateMessage(''), 1000);
       }
 
       // Set flag to send emails after state update

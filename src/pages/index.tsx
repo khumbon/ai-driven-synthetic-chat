@@ -25,6 +25,7 @@ import {
   Description,
   CheckCircle,
   Timer,
+  Warning,
 } from '@mui/icons-material';
 import {
   BarChart,
@@ -44,6 +45,9 @@ import { LegalInsightsEmailPreview } from '@/components';
 import { useGenerateChats, useGenerateReport, useSendEmails } from '@/data/hooks';
 import { theme } from '@/styles/theme';
 import robotTypingAnimation from '@/assets/robotTypingAnimation.json';
+import { mockReportData } from '@/data/hooks/__tests__/mockReportData';
+
+const initialReportData = mockReportData;
 
 // Colors for the task breakdown chart
 const CHART_COLORS = [
@@ -77,6 +81,7 @@ const Home = () => {
     isPending: isSending,
     error: sendEmailsError,
   } = useSendEmails();
+
   console.log('sendEmailsData');
   console.log(sendEmailsData);
 
@@ -87,6 +92,10 @@ const Home = () => {
     console.log('reportError', reportError);
   }
 
+  // Use mock data initially, then real data once available
+  const displayData = reportData || initialReportData;
+  const isUsingMockData = !reportData;
+
   const handleGenerateChats = () => {
     mutateGenerateChats();
   };
@@ -96,8 +105,8 @@ const Home = () => {
   };
 
   const handleSendEmails = async () => {
-    if (reportData) {
-      mutateSendEmails({ emails, reportData });
+    if (displayData) {
+      mutateSendEmails({ emails, reportData: displayData });
     }
   };
 
@@ -132,9 +141,9 @@ const Home = () => {
 
   // Prepare task breakdown data for pie chart
   const getTaskBreakdownData = () => {
-    if (!reportData?.timeSaved.taskBreakdown) return [];
+    if (!displayData?.timeSaved.taskBreakdown) return [];
 
-    return Object.entries(reportData.timeSaved.taskBreakdown)
+    return Object.entries(displayData.timeSaved.taskBreakdown)
       .filter(([, data]) => data.count > 0)
       .map(([taskType, data]) => ({
         name: taskType,
@@ -160,11 +169,39 @@ const Home = () => {
             </Typography>
           </Box>
 
+          {/* Out of Date Data Banner */}
+          {isUsingMockData && !isReportPending && (
+            <Alert
+              severity="warning"
+              icon={<Warning />}
+              sx={{
+                mb: 4,
+                '& .MuiAlert-message': {
+                  width: '100%',
+                },
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <Box>
+                  <Typography variant="body2" fontWeight="medium">
+                    Displaying Sample Data
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    This data is for demonstration purposes. Generate a new report to see current insights.
+                  </Typography>
+                </Box>
+                <Button variant="contained" size="small" onClick={handleGenerateEmail} sx={{ ml: 2, flexShrink: 0 }}>
+                  Generate Current Report
+                </Button>
+              </Box>
+            </Alert>
+          )}
+
           {/* Stats Cards */}
-          {reportData && (
+          {displayData && (
             <Grid container spacing={3} sx={{ mb: 6 }}>
               <Grid size={{ xs: 12, md: 3 }}>
-                <Card elevation={2}>
+                <Card elevation={2} sx={{ opacity: isUsingMockData ? 0.8 : 1 }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <Box>
@@ -172,7 +209,7 @@ const Home = () => {
                           Total Conversations
                         </Typography>
                         <Typography variant="h4" fontWeight="bold" color="primary">
-                          {reportData.summary.totalConversations}
+                          {displayData.summary.totalConversations}
                         </Typography>
                       </Box>
                       <QuestionAnswer color="primary" sx={{ fontSize: 40 }} />
@@ -182,7 +219,7 @@ const Home = () => {
               </Grid>
 
               <Grid size={{ xs: 12, md: 3 }}>
-                <Card elevation={2}>
+                <Card elevation={2} sx={{ opacity: isUsingMockData ? 0.8 : 1 }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <Box>
@@ -190,7 +227,7 @@ const Home = () => {
                           Legal Questions
                         </Typography>
                         <Typography variant="h4" fontWeight="bold" color="secondary">
-                          {reportData.summary.totalUserQuestions}
+                          {displayData.summary.totalUserQuestions}
                         </Typography>
                       </Box>
                       <Description color="secondary" sx={{ fontSize: 40 }} />
@@ -200,7 +237,7 @@ const Home = () => {
               </Grid>
 
               <Grid size={{ xs: 12, md: 3 }}>
-                <Card elevation={2}>
+                <Card elevation={2} sx={{ opacity: isUsingMockData ? 0.8 : 1 }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <Box>
@@ -208,10 +245,10 @@ const Home = () => {
                           Time Saved
                         </Typography>
                         <Typography variant="h4" fontWeight="bold" sx={{ color: '#9333ea' }}>
-                          {reportData.timeSaved?.totalTimeSavedHours
-                            ? `${reportData.timeSaved.totalTimeSavedHours.toFixed(1)}h`
-                            : reportData.timeSaved.totalTimeSaved
-                              ? `${reportData.timeSaved.totalTimeSaved.toFixed(1)}h`
+                          {displayData.timeSaved?.totalTimeSavedHours
+                            ? `${displayData.timeSaved.totalTimeSavedHours.toFixed(1)}h`
+                            : displayData.timeSaved.totalTimeSaved
+                              ? `${displayData.timeSaved.totalTimeSaved.toFixed(1)}h`
                               : '--'}
                         </Typography>
                       </Box>
@@ -222,7 +259,7 @@ const Home = () => {
               </Grid>
 
               <Grid size={{ xs: 12, md: 3 }}>
-                <Card elevation={2}>
+                <Card elevation={2} sx={{ opacity: isUsingMockData ? 0.8 : 1 }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <Box>
@@ -230,7 +267,7 @@ const Home = () => {
                           Cost Savings
                         </Typography>
                         <Typography variant="h4" fontWeight="bold" sx={{ color: '#ea580c' }}>
-                          {reportData.costSaved ?? '--'}
+                          {displayData.costSaved ?? '--'}
                         </Typography>
                       </Box>
                       <TrendingUp sx={{ color: '#ea580c', fontSize: 40 }} />
@@ -247,7 +284,12 @@ const Home = () => {
               <Paper elevation={2} sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                   <Typography variant="h5" fontWeight="bold">
-                    Report Preview
+                    Report Preview{' '}
+                    {isUsingMockData && (
+                      <Typography component="span" variant="caption" color="text.secondary">
+                        (Sample Data)
+                      </Typography>
+                    )}
                   </Typography>
                   <Stack direction="row" spacing={2}>
                     <Button
@@ -267,7 +309,7 @@ const Home = () => {
                       {isReportPending ? 'Generating email...' : 'Generate Email'}
                     </Button>
 
-                    {reportData && (
+                    {displayData && (
                       <Button variant="outlined" onClick={handleDownloadEmail} startIcon={<Download />}>
                         Download HTML
                       </Button>
@@ -286,13 +328,13 @@ const Home = () => {
                 )}
 
                 {/* Email Preview */}
-                {!isReportPending && reportData && !isReportError && (
-                  <Box id="email-preview">
-                    <LegalInsightsEmailPreview reportData={reportData} />
+                {!isReportPending && displayData && !isReportError && (
+                  <Box id="email-preview" sx={{ opacity: isUsingMockData ? 0.8 : 1 }}>
+                    <LegalInsightsEmailPreview reportData={displayData} />
                   </Box>
                 )}
 
-                {reportData && (
+                {reportData && !isUsingMockData && (
                   <Alert severity="success" sx={{ mt: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <CheckCircle />
@@ -318,7 +360,7 @@ const Home = () => {
                   Send Email Report
                 </Typography>
 
-                {!reportData && !isReportError && !isReportPending ? (
+                {!displayData && !isReportError && !isReportPending ? (
                   <Box sx={{ textAlign: 'center', py: 6 }}>
                     <Mail sx={{ fontSize: 60, color: 'text.disabled', mb: 2 }} />
                     <Typography variant="body2" color="text.secondary">
@@ -350,16 +392,21 @@ const Home = () => {
           </Grid>
 
           {/* Enhanced Charts Section */}
-          {reportData && (
+          {displayData && (
             <Grid container spacing={3} sx={{ mt: 3 }}>
               <Grid size={{ xs: 12, lg: 6 }}>
-                <Paper elevation={2} sx={{ p: 3 }}>
+                <Paper elevation={2} sx={{ p: 3, opacity: isUsingMockData ? 0.8 : 1 }}>
                   <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
-                    Question Pattern Distribution
+                    Question Pattern Distribution{' '}
+                    {isUsingMockData && (
+                      <Typography component="span" variant="caption" color="text.secondary">
+                        (Sample)
+                      </Typography>
+                    )}
                   </Typography>
                   <Box sx={{ width: '100%', height: 300 }}>
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={reportData.patterns.slice(0, 5)}>
+                      <BarChart data={displayData.patterns.slice(0, 5)}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                         <XAxis
                           dataKey="pattern"
@@ -386,12 +433,17 @@ const Home = () => {
               </Grid>
 
               <Grid size={{ xs: 12, lg: 6 }}>
-                <Paper elevation={2} sx={{ p: 3 }}>
+                <Paper elevation={2} sx={{ p: 3, opacity: isUsingMockData ? 0.8 : 1 }}>
                   <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
-                    Top Legal Terms
+                    Top Legal Terms{' '}
+                    {isUsingMockData && (
+                      <Typography component="span" variant="caption" color="text.secondary">
+                        (Sample)
+                      </Typography>
+                    )}
                   </Typography>
                   <Stack spacing={2}>
-                    {reportData.mostCommonTerms.slice(0, 6).map(([term, count]) => (
+                    {displayData.mostCommonTerms.slice(0, 6).map(([term, count]) => (
                       <Box key={term} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Typography variant="body2" fontWeight="medium">
                           {term}
@@ -399,7 +451,7 @@ const Home = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <LinearProgress
                             variant="determinate"
-                            value={(Number(count) / Number(reportData.mostCommonTerms[0][1])) * 100}
+                            value={(Number(count) / Number(displayData.mostCommonTerms[0][1])) * 100}
                             sx={{
                               width: 100,
                               height: 8,
@@ -422,12 +474,17 @@ const Home = () => {
               </Grid>
 
               {/* Time Savings Analysis */}
-              {reportData.timeSaved && (
+              {displayData.timeSaved && (
                 <>
                   <Grid size={{ xs: 12, lg: 6 }}>
-                    <Paper elevation={2} sx={{ p: 3 }}>
+                    <Paper elevation={2} sx={{ p: 3, opacity: isUsingMockData ? 0.8 : 1 }}>
                       <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
-                        Task Type Distribution
+                        Task Type Distribution{' '}
+                        {isUsingMockData && (
+                          <Typography component="span" variant="caption" color="text.secondary">
+                            (Sample)
+                          </Typography>
+                        )}
                       </Typography>
                       <Box sx={{ width: '100%', height: 300 }}>
                         <ResponsiveContainer width="100%" height="100%">
@@ -460,9 +517,14 @@ const Home = () => {
                   </Grid>
 
                   <Grid size={{ xs: 12, lg: 6 }}>
-                    <Paper elevation={2} sx={{ p: 3 }}>
+                    <Paper elevation={2} sx={{ p: 3, opacity: isUsingMockData ? 0.8 : 1 }}>
                       <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
-                        Time Efficiency Metrics
+                        Time Efficiency Metrics{' '}
+                        {isUsingMockData && (
+                          <Typography component="span" variant="caption" color="text.secondary">
+                            (Sample)
+                          </Typography>
+                        )}
                       </Typography>
                       <Stack spacing={3}>
                         <Box>
@@ -471,7 +533,7 @@ const Home = () => {
                               Average AI Response Time
                             </Typography>
                             <Typography variant="body2" fontWeight="medium">
-                              {reportData.timeSaved.averageResponseTime.toFixed(1)} min
+                              {displayData.timeSaved.averageResponseTime.toFixed(1)} min
                             </Typography>
                           </Box>
                           <LinearProgress
@@ -495,7 +557,7 @@ const Home = () => {
                               Typical Lawyer Time
                             </Typography>
                             <Typography variant="body2" fontWeight="medium">
-                              {reportData.timeSaved.averageLawyerTime.toFixed(1)} min
+                              {displayData.timeSaved.averageLawyerTime.toFixed(1)} min
                             </Typography>
                           </Box>
                           <LinearProgress
@@ -531,7 +593,7 @@ const Home = () => {
                             <Typography variant="caption" color="primary.dark">
                               {(
                                 (1 -
-                                  reportData.timeSaved.averageResponseTime / reportData.timeSaved.averageLawyerTime) *
+                                  displayData.timeSaved.averageResponseTime / displayData.timeSaved.averageLawyerTime) *
                                 100
                               ).toFixed(1)}
                               % faster than traditional legal research

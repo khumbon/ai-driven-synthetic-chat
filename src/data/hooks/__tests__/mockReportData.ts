@@ -2,101 +2,101 @@ import { ReportData } from '@/api/types';
 
 export const mockReportData: ReportData = {
   summary: {
-    totalConversations: 12,
-    totalUserQuestions: 35,
+    totalConversations: 20,
+    totalUserQuestions: 58,
     avgMessagesPerChat: '5.8',
     avgQuestionsPerChat: '2.9',
   },
   privacyTopics: {
-    'GDPR & International Compliance': 2,
-    'AI & Privacy': 0,
-    'Data Breaches & Incident Response': 2,
-    'Employee Monitoring': 2,
-    'Data Sharing & Transfers': 1,
-    'Consent & Cookies': 0,
-    'Cross-Border Data Transfers': 0,
-    'Automated Decision-Making': 0,
-    'Vendor Due Diligence': 0,
-    'Records of Processing (Article 30)': 0,
+    'GDPR & International Compliance': 4,
+    'AI & Privacy': 1,
+    'Data Breaches & Incident Response': 3,
+    'Employee Monitoring': 3,
+    'Data Sharing & Transfers': 2,
+    'Consent & Cookies': 1,
+    'Cross-Border Data Transfers': 1,
+    'Automated Decision-Making': 1,
+    'Vendor Due Diligence': 1,
+    'Records of Processing (Article 30)': 1,
   },
   commercialContractTopics: {
-    'Contract Risk & Liability': 1,
-    'Vendor Relationship Management': 0,
-    'Intellectual Property & Licensing': 0,
-    'Service Performance & SLAs': 0,
-    'Payment & Financial Terms': 0,
-    'Software Escrow & Data Portability': 0,
-    'Termination & Exit Rights': 0,
-    'Security & Compliance Requirements': 1,
-    'Indemnification & Insurance': 0,
-    'Force Majeure & Business Continuity': 0,
+    'Contract Risk & Liability': 2,
+    'Vendor Relationship Management': 1,
+    'Intellectual Property & Licensing': 1,
+    'Service Performance & SLAs': 1,
+    'Payment & Financial Terms': 1,
+    'Software Escrow & Data Portability': 1,
+    'Termination & Exit Rights': 1,
+    'Security & Compliance Requirements': 2,
+    'Indemnification & Insurance': 1,
+    'Force Majeure & Business Continuity': 1,
   },
   patterns: [
-    { pattern: 'Do I need to...', count: 13 },
-    { pattern: 'What are the requirements for...', count: 12 },
-    { pattern: 'What are the penalties/risks...', count: 8 },
-    { pattern: 'What documentation should...', count: 7 },
-    { pattern: "What's reasonable/fair...", count: 4 },
-    { pattern: 'Can I/we...', count: 3 },
-    { pattern: 'What should I include/negotiate...', count: 2 },
-    { pattern: 'What happens if...', count: 2 },
-    { pattern: 'How do I balance/compromise...', count: 2 },
-    { pattern: 'How should I modify/draft...', count: 1 },
-    { pattern: 'How do I assess/evaluate...', count: 1 },
-    { pattern: 'What specific language should...', count: 1 },
+    { pattern: 'Do I need to...', count: 22 },
+    { pattern: 'What are the requirements for...', count: 20 },
+    { pattern: 'What are the penalties/risks...', count: 13 },
+    { pattern: 'What documentation should...', count: 12 },
+    { pattern: "What's reasonable/fair...", count: 7 },
+    { pattern: 'Can I/we...', count: 5 },
+    { pattern: 'What should I include/negotiate...', count: 4 },
+    { pattern: 'What happens if...', count: 3 },
+    { pattern: 'How do I balance/compromise...', count: 3 },
+    { pattern: 'How should I modify/draft...', count: 2 },
+    { pattern: 'How do I assess/evaluate...', count: 2 },
+    { pattern: 'What specific language should...', count: 2 },
   ],
   mostCommonTerms: [
-    ['ai', 11],
-    ['requirements', 11],
-    ['compliance', 6],
-    ['liability', 5],
-    ['insurance', 5],
-    ['security', 5],
-    ['payment', 5],
-    ['consent', 5],
-    ['notification', 5],
-    ['transfer', 4],
+    ['ai', 18],
+    ['requirements', 18],
+    ['compliance', 10],
+    ['liability', 8],
+    ['insurance', 8],
+    ['security', 8],
+    ['payment', 8],
+    ['consent', 8],
+    ['notification', 8],
+    ['transfer', 7],
   ],
   timeSaved: {
-    totalQuestions: 35,
-    totalTimeSaved: 978, // in minutes (16.3 hours)
-    totalTimeSavedHours: 16.3,
+    totalQuestions: 58,
+    totalTimeSaved: 1595, // in minutes (26.6 hours)
+    totalTimeSavedHours: 26.6,
     averageResponseTime: 2.5, // AI response time in minutes
-    averageLawyerTime: 30, // typical lawyer time in minutes (adjusted to reach 16.3 hours)
+    averageLawyerTime: 30, // typical lawyer time in minutes
     taskBreakdown: {
       'Legal Research': {
-        count: 12,
-        totalTimeSaved: 330, // 12 * (30 - 2.5)
+        count: 20,
+        totalTimeSaved: 550,
         avgResponseTime: 2.5,
       },
       'Compliance Analysis': {
-        count: 8,
-        totalTimeSaved: 220, // 8 * (30 - 2.5)
+        count: 13,
+        totalTimeSaved: 357.5,
         avgResponseTime: 2.5,
       },
       'Document Review': {
-        count: 6,
-        totalTimeSaved: 165, // 6 * (30 - 2.5)
+        count: 10,
+        totalTimeSaved: 275,
         avgResponseTime: 2.5,
       },
       'Quick Answer': {
-        count: 5,
-        totalTimeSaved: 137.5, // 5 * (30 - 2.5)
+        count: 8,
+        totalTimeSaved: 220,
         avgResponseTime: 2.5,
       },
       'Legal Opinion': {
-        count: 2,
-        totalTimeSaved: 55, // 2 * (30 - 2.5)
+        count: 3,
+        totalTimeSaved: 82.5,
         avgResponseTime: 2.5,
       },
       'Risk Assessment': {
-        count: 2,
-        totalTimeSaved: 55, // 2 * (30 - 2.5)
+        count: 3,
+        totalTimeSaved: 82.5,
         avgResponseTime: 2.5,
       },
       'Contract Drafting': {
-        count: 0,
-        totalTimeSaved: 0,
+        count: 1,
+        totalTimeSaved: 27.5,
         avgResponseTime: 2.5,
       },
       'Policy Review': {
@@ -145,10 +145,10 @@ export const mockReportData: ReportData = {
       },
     ],
   },
-  costSaved: '$4,890', // Based on $300/hour lawyer rate * 16.3 hours saved
+  costSaved: '$7,980', // Based on $300/hour lawyer rate * 26.6 hours saved
   statistics: {
-    totalMessages: 70, // Total messages across all conversations
-    totalUserQuestions: 35,
+    totalMessages: 116, // Total messages across all conversations (20 * 5.8)
+    totalUserQuestions: 58,
     avgMessagesPerChat: '5.8',
     avgUserQuestionsPerChat: '2.9',
     longestConversation: {
