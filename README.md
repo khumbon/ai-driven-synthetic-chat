@@ -231,26 +231,6 @@ npm install -g pnpm@10.11.0
 
 For questions and support, please refer to the project documentation or contact the project owner.
 
-# Batching vs. Cleaning/Repair Approach Comparison
-
-## Option 3: Batching (Multiple API Calls)
-
-```typescript
-// Generate 6 chats as 3 batches of 2
-const allChats = [];
-for (let i = 0; i < 3; i++) {
-  const batch = await generateChats(2); // Smaller, reliable requests
-  allChats.push(...batch);
-}
-```
-
-## Option 4: Clean & Repair (Single API Call + Recovery)
-
-```typescript
-// Generate all 6 chats in one call, then repair truncated response
-const response = await generateChats(6); // Might get truncated
-const cleanedChats = cleanAndRepairResponse(response); // Salvage what we can
-```
 
 ![alt text](src/assets/image.png)
 ![alt text](src/assets/image-1.png)
@@ -336,6 +316,27 @@ const cleanedChats = cleanAndRepairResponse(response); // Salvage what we can
 - **Add time-series analysis** to track improvement trends in lawyer-AI interaction efficiency over extended periods
 - **Implement anomaly detection** to identify unusual usage patterns that might indicate training needs or system optimization opportunities
 - **Build executive summary generation** that automatically creates board-ready reports highlighting key ROI metrics and strategic recommendations
+
+## Batching vs. Cleaning/Repair Approach Comparison
+
+### Batching (Multiple API Calls)
+
+```typescript
+// Generate 6 chats as 3 batches of 2
+const allChats = [];
+for (let i = 0; i < 3; i++) {
+  const batch = await generateChats(2); // Smaller, reliable requests
+  allChats.push(...batch);
+}
+```
+
+### Clean & Repair (Single API Call + Recovery)
+
+```typescript
+// Generate all 6 chats in one call, then repair truncated response
+const response = await generateChats(6); // Might get truncated
+const cleanedChats = cleanAndRepairResponse(response); // Salvage what we can
+```
 
 ## Detailed Comparison of Batching Anthropic calls vs Cleaning Anthropic calls
 
