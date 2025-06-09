@@ -44,6 +44,7 @@ A Next.js application that generates synthetic legal chat conversations using AI
 
    ```env
    ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   RESEND_API_KEY=your_resend_api_key_here
    ```
 
 4. Start the development server
@@ -302,6 +303,10 @@ For questions and support, please refer to the project documentation or contact 
 - **Add webhook integrations** for popular legal platforms (Clio, LexisNexis, Westlaw) to enable seamless workflow integration
 - **Create data encryption standards** for all stored conversations and reports, with proper key management for handling confidential legal communications
 - **Develop multi-tenant architecture** to support law firms and legal departments with isolated data and customized analytics
+
+### Deployment and Infrastructure
+- **Host a production app on Vercel** for scalable, reliable deployment with automatic CI/CD integration and edge optimization
+- **Look into MCP Tools: Next.js Model Context Protocol (MCP) Tools** for enhanced AI integration capabilities and response stream
 
 ### Quality Assurance and Testing Infrastructure
 - **Implement comprehensive unit testing suite** using Jest for all utility functions and modular components with >90% code coverage
